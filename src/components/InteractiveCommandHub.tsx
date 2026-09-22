@@ -456,6 +456,19 @@ export function InteractiveCommandHub() {
               <span className="truncate max-w-[140px] font-semibold">{activeStaff}</span>
               <KeyPadIcon className="w-4 h-4 opacity-60" />
             </button>
+
+            {/* Station Login / Role Gateway */}
+            <Link
+              href="/login"
+              className={`flex items-center gap-1.5 min-h-[44px] px-3.5 py-2 rounded-xl border text-xs font-semibold transition cursor-pointer shadow-xs ${
+                isDark
+                  ? "bg-indigo-950/60 hover:bg-indigo-900/60 border-indigo-800 text-indigo-300"
+                  : "bg-indigo-50 hover:bg-indigo-100 border-indigo-200 text-indigo-700"
+              }`}
+              title="Go to Station Login & Role Selector"
+            >
+              <span>Station Login</span>
+            </Link>
           </div>
         </div>
       </header>

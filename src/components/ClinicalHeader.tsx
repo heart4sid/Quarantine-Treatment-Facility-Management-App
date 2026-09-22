@@ -156,12 +156,21 @@ export function ClinicalHeader({ activeStation }: { activeStation?: string }) {
             <div className="flex items-center gap-2 sm:gap-2.5 shrink-0">
               {/* Master Command Hub Link */}
               <Link
-                href="/"
+                href="/hub"
                 className="px-2.5 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 dark:bg-slate-900 dark:hover:bg-slate-800 border border-slate-200 dark:border-slate-800 text-xs font-semibold text-slate-700 dark:text-slate-300 transition-all duration-150 flex items-center gap-1.5 shadow-2xs"
                 title="Return to Master Interactive Command Hub"
               >
                 <span className="text-amber-500 text-sm">⚡</span>
                 <span className="hidden md:inline">Command Hub</span>
+              </Link>
+
+              {/* Station Login / Switch */}
+              <Link
+                href="/login"
+                className="px-2.5 py-1.5 rounded-lg bg-indigo-50 hover:bg-indigo-100 dark:bg-indigo-950/60 dark:hover:bg-indigo-900/60 border border-indigo-200 dark:border-indigo-800 text-xs font-semibold text-indigo-700 dark:text-indigo-300 transition-all duration-150 flex items-center gap-1 shadow-2xs"
+                title="Switch duty station or authenticate staff"
+              >
+                <span>Login</span>
               </Link>
 
               {/* Theme Toggle */}

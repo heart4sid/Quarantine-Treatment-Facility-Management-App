@@ -1,0 +1,260 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>TPM Assessment - Siddharth Kumar Mishra</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+<style>
+:root{--bg:#0a0e1a;--surface:#111827;--s2:#1a2235;--bdr:#1e2d45;--acc:#3b82f6;--acc2:#06b6d4;--acc3:#8b5cf6;--grn:#10b981;--amb:#f59e0b;--red:#ef4444;--txt:#e2e8f0;--mut:#94a3b8;--lgt:#cbd5e1}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Inter,sans-serif;background:var(--bg);color:var(--txt);line-height:1.7;font-size:15px}
+.cover{min-height:100vh;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;padding:60px 40px;background:radial-gradient(ellipse at 20% 50%,rgba(59,130,246,.15),transparent 50%),radial-gradient(ellipse at 80% 20%,rgba(139,92,246,.12),transparent 50%),var(--bg)}
+.cover h1{font-size:clamp(24px,4vw,48px);font-weight:800;line-height:1.2;background:linear-gradient(135deg,#fff 30%,#94a3b8);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;max-width:720px;margin:24px 0 12px}
+.badge{background:rgba(59,130,246,.15);border:1px solid rgba(59,130,246,.3);color:#93c5fd;padding:6px 16px;border-radius:100px;font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.08em}
+.sub{font-size:16px;color:var(--mut);max-width:540px;margin-bottom:36px}
+.div-cover{width:60px;height:3px;background:linear-gradient(90deg,#3b82f6,#8b5cf6);border-radius:2px;margin:36px auto}
+.meta{display:flex;gap:36px;flex-wrap:wrap;justify-content:center}
+.mi .lb{font-size:11px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--mut);margin-bottom:4px}
+.mi .vl{font-size:15px;font-weight:600;color:var(--lgt)}
+.toc{text-align:left;max-width:460px;width:100%;margin-top:36px}
+.toc h3{font-size:12px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--mut);margin-bottom:12px}
+.ti{display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--bdr);color:var(--lgt);font-size:14px}
+.tn{width:24px;height:24px;border-radius:6px;background:rgba(59,130,246,.15);border:1px solid rgba(59,130,246,.3);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#93c5fd;flex-shrink:0}
+.sec{max-width:940px;margin:0 auto;padding:70px 36px}
+.sec+.sec{padding-top:0}
+.qh{margin-bottom:36px;padding:24px 28px;background:var(--surface);border:1px solid var(--bdr);border-radius:14px;border-left:4px solid var(--acc)}
+.qn{font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#60a5fa;margin-bottom:6px}
+.qt{font-size:19px;font-weight:700;color:#fff;margin-bottom:5px}
+.qd{font-size:13px;color:var(--mut)}
+h2{font-size:20px;font-weight:700;color:#fff;margin-bottom:14px}
+h4{font-size:13px;font-weight:600;color:var(--mut);margin-bottom:6px;text-transform:uppercase;letter-spacing:.06em}
+p{color:var(--lgt);margin-bottom:12px}
+strong{color:#fff;font-weight:600}
+code{font-family:"JetBrains Mono",monospace;font-size:13px;background:rgba(59,130,246,.1);color:#93c5fd;padding:2px 6px;border-radius:4px}
+.card{background:var(--surface);border:1px solid var(--bdr);border-radius:12px;padding:22px;margin-bottom:14px}
+.cg{display:grid;grid-template-columns:repeat(auto-fit,minmax(270px,1fr));gap:14px;margin-bottom:20px}
+.rc{background:var(--surface);border:1px solid var(--bdr);border-radius:12px;padding:18px;position:relative;overflow:hidden}
+.rc::before{content:"";position:absolute;top:0;left:0;right:0;height:3px}
+.nurse::before{background:linear-gradient(90deg,#06b6d4,#0891b2)}
+.doctor::before{background:linear-gradient(90deg,#3b82f6,#2563eb)}
+.admin::before{background:linear-gradient(90deg,#8b5cf6,#7c3aed)}
+.head::before{background:linear-gradient(90deg,#f59e0b,#d97706)}
+.sysadmin::before{background:linear-gradient(90deg,#ef4444,#dc2626)}
+.ri{width:38px;height:38px;border-radius:9px;display:flex;align-items:center;justify-content:center;margin-bottom:10px;font-size:18px}
+.rn{font-size:14px;font-weight:700;color:#fff;margin-bottom:3px}
+.rs{font-size:11px;color:var(--mut);margin-bottom:10px}
+.ft{display:inline-block;padding:3px 7px;border-radius:4px;font-size:11px;font-weight:500;margin:2px}
+.fcan{background:rgba(16,185,129,.15);color:#6ee7b7;border:1px solid rgba(16,185,129,.2)}
+.fcant{background:rgba(239,68,68,.1);color:#fca5a5;border:1px solid rgba(239,68,68,.2)}
+.lbl{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--mut);margin:8px 0 4px}
+.tw{overflow-x:auto;margin-bottom:22px;border-radius:12px;border:1px solid var(--bdr)}
+table{width:100%;border-collapse:collapse}
+th{background:var(--s2);padding:11px 14px;text-align:left;font-size:12px;font-weight:600;letter-spacing:.05em;text-transform:uppercase;color:var(--mut);border-bottom:1px solid var(--bdr);white-space:nowrap}
+td{padding:11px 14px;border-bottom:1px solid var(--bdr);font-size:14px;color:var(--lgt);vertical-align:top}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:rgba(255,255,255,.02)}
+.pill{display:inline-block;padding:3px 10px;border-radius:100px;font-size:11px;font-weight:600}
+.ph{background:rgba(239,68,68,.15);color:#fca5a5;border:1px solid rgba(239,68,68,.2)}
+.pm{background:rgba(245,158,11,.15);color:#fcd34d;border:1px solid rgba(245,158,11,.2)}
+.pl{background:rgba(16,185,129,.15);color:#6ee7b7;border:1px solid rgba(16,185,129,.2)}
+.pb{background:rgba(59,130,246,.15);color:#93c5fd;border:1px solid rgba(59,130,246,.2)}
+.con{display:flex;gap:14px;padding:14px 0;border-bottom:1px solid var(--bdr)}
+.con:last-child{border-bottom:none}
+.cn{width:26px;height:26px;border-radius:7px;background:rgba(59,130,246,.15);border:1px solid rgba(59,130,246,.25);color:#93c5fd;font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px}
+.ct{font-size:14px;font-weight:600;color:#fff;margin-bottom:3px}
+.cd{font-size:13px;color:var(--mut);line-height:1.6}
+.ctg{display:inline-flex;align-items:center;font-size:10px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;padding:2px 6px;border-radius:3px;margin-top:5px;margin-right:4px}
+.csf{background:rgba(239,68,68,.1);color:#fca5a5}
+.cdt{background:rgba(59,130,246,.1);color:#93c5fd}
+.cux{background:rgba(139,92,246,.1);color:#c4b5fd}
+.cbz{background:rgba(16,185,129,.1);color:#6ee7b7}
+.csc{background:rgba(245,158,11,.1);color:#fcd34d}
+.sc{background:var(--surface);border:1px solid var(--bdr);border-radius:12px;margin-bottom:14px;overflow:hidden}
+.sh{display:flex;align-items:center;justify-content:space-between;padding:14px 18px;background:var(--s2);border-bottom:1px solid var(--bdr)}
+.stitle{font-size:14px;font-weight:700;color:#fff}
+.sscore{font-size:12px;font-weight:600;color:#93c5fd;background:rgba(59,130,246,.1);border:1px solid rgba(59,130,246,.2);padding:4px 12px;border-radius:100px}
+.sb{padding:14px 18px}
+.si{display:flex;align-items:flex-start;gap:10px;padding:8px 0;border-bottom:1px solid rgba(255,255,255,.04);font-size:13px}
+.si:last-child{border-bottom:none}
+.spts{font-size:11px;font-weight:700;color:var(--mut);width:20px;text-align:right;flex-shrink:0}
+a{color:#60a5fa;text-decoration:none}
+a:hover{text-decoration:underline}
+.cl{display:flex;gap:12px;padding:14px 18px;border-radius:10px;margin-bottom:18px;font-size:14px}
+.cli{background:rgba(59,130,246,.08);border:1px solid rgba(59,130,246,.2);color:#bfdbfe}
+.cls{background:rgba(16,185,129,.08);border:1px solid rgba(16,185,129,.2);color:#a7f3d0}
+.clw{background:rgba(245,158,11,.08);border:1px solid rgba(245,158,11,.2);color:#fde68a}
+.clic{font-size:18px;flex-shrink:0;margin-top:1px}
+.sdiv{height:1px;background:linear-gradient(90deg,transparent,var(--bdr),transparent);margin:44px 0}
+.footer{text-align:center;padding:36px;color:var(--mut);font-size:13px;border-top:1px solid var(--bdr)}
+</style>
+</head>
+<body>
+<div class="cover">
+<div class="badge">&#127973; Technical Product Manager Assessment</div>
+<h1>Quarantine &amp; Treatment Facility Management App</h1>
+<p class="sub">A BSL-4 Clinical Operations Platform &mdash; TPM Technical Assessment Submission</p>
+<div class="div-cover"></div>
+<div class="meta">
+<div class="mi"><div class="lb">Submitted by</div><div class="vl">Siddharth Kumar Mishra</div></div>
+<div class="mi"><div class="lb">Role Applied</div><div class="vl">Technical Product Manager</div></div>
+<div class="mi"><div class="lb">Live Prototype</div><div class="vl"><a href="https://quarantine-treatment-facility-manag.vercel.app" target="_blank">Vercel Deployment &#8599;</a></div></div>
+<div class="mi"><div class="lb">Source Code</div><div class="vl"><a href="https://github.com/heart4sid/Quarantine-Treatment-Facility-Management-App" target="_blank">GitHub &#8599;</a></div></div>
+</div>
+<div class="div-cover"></div>
+<div class="toc"><h3>Contents</h3>
+<div class="ti"><div class="tn">Q1</div> User Roles &amp; Feature Matrix</div>
+<div class="ti"><div class="tn">Q2</div> Functional Prototype &amp; Deployment</div>
+<div class="ti"><div class="tn">Q3</div> Logical Constraints for Developers</div>
+<div class="ti"><div class="tn">Q4</div> Sprint Planning &amp; Prioritization</div>
+</div>
+</div>
+<div class="sec">
+<div class="qh"><div class="qn">Question 01 / 04</div><div class="qt">User Roles &amp; Feature Relevance</div><div class="qd">In your app's first version, what are the different kinds of users, and which features and actions are relevant for which user types?</div></div>
+<div class="cl cli"><div class="clic">&#8505;&#65039;</div><div>The app serves a BSL-4 quarantine facility with 74 beds and a 15% patient mortality rate. Each user role maps to a distinct clinical or operational responsibility, with strict role-based access control enforced server-side to prevent workflow shortcuts that reintroduce coordination chaos.</div></div>
+<div class="cg">
+<div class="rc nurse"><div class="ri" style="background:rgba(6,182,212,.15)">&#129314;</div><div class="rn">Nurse</div><div class="rs">Daily vitals recording &amp; patient care logging</div><div class="lbl">CAN DO</div><span class="ft fcan">Log temperature readings</span><span class="ft fcan">View assigned patient list</span><span class="ft fcan">See daily task checklist</span><span class="ft fcan">Edit own same-day entries</span><span class="ft fcan">View fever/no-fever flags</span><div class="lbl">CANNOT DO</div><span class="ft fcant">Approve discharge</span><span class="ft fcant">View analytics</span><span class="ft fcant">Add doctor visit notes</span><span class="ft fcant">Admit patients</span></div>
+<div class="rc doctor"><div class="ri" style="background:rgba(59,130,246,.15)">&#128104;&#8205;&#9877;&#65039;</div><div class="rn">Doctor</div><div class="rs">Clinical review, treatment decisions &amp; discharge sign-off</div><div class="lbl">CAN DO</div><span class="ft fcan">View patient history &amp; fever streak</span><span class="ft fcan">Log visit notes &amp; treatment</span><span class="ft fcan">Approve discharge</span><span class="ft fcan">See discharge-eligible queue</span><span class="ft fcan">Log override exceptions</span><div class="lbl">CANNOT DO</div><span class="ft fcant">Log temperatures</span><span class="ft fcant">Admit/discharge (execute)</span><span class="ft fcant">Manage beds</span></div>
+<div class="rc admin"><div class="ri" style="background:rgba(139,92,246,.15)">&#127973;</div><div class="rn">Admin Staff</div><div class="rs">Bed management, intake &amp; discharge execution</div><div class="lbl">CAN DO</div><span class="ft fcan">Admit new patients</span><span class="ft fcan">Assign bed/room</span><span class="ft fcan">Execute approved discharge</span><span class="ft fcan">Manage waitlist</span><span class="ft fcan">Log patient outcomes</span><div class="lbl">CANNOT DO</div><span class="ft fcant">Approve discharge clinically</span><span class="ft fcant">Enter clinical data</span></div>
+<div class="rc head"><div class="ri" style="background:rgba(245,158,11,.15)">&#128202;</div><div class="rn">Facility Head / Quality Lead</div><div class="rs">Oversight of outcomes and operations</div><div class="lbl">CAN DO</div><span class="ft fcan">Full analytics dashboard</span><span class="ft fcan">Mortality rate monitoring</span><span class="ft fcan">Occupancy trends</span><span class="ft fcan">Staff task completion rates</span><span class="ft fcan">Receive threshold alerts</span><div class="lbl">READ-ONLY</div><span class="ft fcant">Any clinical/operational data</span></div>
+<div class="rc sysadmin"><div class="ri" style="background:rgba(239,68,68,.15)">&#9881;&#65039;</div><div class="rn">System Admin (IT)</div><div class="rs">User &amp; access management</div><div class="lbl">CAN DO</div><span class="ft fcan">Create / deactivate accounts</span><span class="ft fcan">Assign roles</span><span class="ft fcan">Access audit logs</span><span class="ft fcan">Configure fever threshold</span><span class="ft fcan">Manage facility settings</span></div>
+</div>
+<h2>Feature Access Matrix</h2>
+<div class="tw"><table>
+<thead><tr><th>Feature / Action</th><th>Nurse</th><th>Doctor</th><th>Admin</th><th>Facility Head</th><th>Sys Admin</th></tr></thead>
+<tbody>
+<tr><td><strong>Log temperature</strong></td><td>&#9989; Write</td><td>&#10060;</td><td>&#10060;</td><td>&#10060;</td><td>&#10060;</td></tr>
+<tr><td><strong>View patient list</strong></td><td>&#9989;</td><td>&#9989;</td><td>&#9989;</td><td>&#128202; Aggregated</td><td>&#10060;</td></tr>
+<tr><td><strong>View fever streak</strong></td><td>&#9989; Read</td><td>&#9989; Read</td><td>&#10060;</td><td>&#10060;</td><td>&#10060;</td></tr>
+<tr><td><strong>Log visit notes</strong></td><td>&#10060;</td><td>&#9989; Write</td><td>&#10060;</td><td>&#10060;</td><td>&#10060;</td></tr>
+<tr><td><strong>Approve discharge</strong></td><td>&#10060;</td><td>&#9989;</td><td>&#10060;</td><td>&#10060;</td><td>&#10060;</td></tr>
+<tr><td><strong>Execute discharge</strong></td><td>&#10060;</td><td>&#10060;</td><td>&#9989; post-approval</td><td>&#10060;</td><td>&#10060;</td></tr>
+<tr><td><strong>Admit patient</strong></td><td>&#10060;</td><td>&#10060;</td><td>&#9989;</td><td>&#10060;</td><td>&#10060;</td></tr>
+<tr><td><strong>Manage beds / waitlist</strong></td><td>&#10060;</td><td>&#10060;</td><td>&#9989;</td><td>&#10060;</td><td>&#10060;</td></tr>
+<tr><td><strong>Log patient outcome</strong></td><td>&#10060;</td><td>&#10060;</td><td>&#9989;</td><td>&#10060;</td><td>&#10060;</td></tr>
+<tr><td><strong>Analytics dashboard</strong></td><td>&#10060;</td><td>&#10060;</td><td>&#10060;</td><td>&#9989; Full</td><td>&#10060;</td></tr>
+<tr><td><strong>Mortality alerts</strong></td><td>&#10060;</td><td>&#10060;</td><td>&#10060;</td><td>&#9989;</td><td>&#10060;</td></tr>
+<tr><td><strong>User &amp; role management</strong></td><td>&#10060;</td><td>&#10060;</td><td>&#10060;</td><td>&#10060;</td><td>&#9989;</td></tr>
+<tr><td><strong>Audit log access</strong></td><td>&#10060;</td><td>&#10060;</td><td>&#10060;</td><td>&#10060;</td><td>&#9989;</td></tr>
+<tr><td><strong>Fever threshold config</strong></td><td>&#10060;</td><td>&#10060;</td><td>&#10060;</td><td>&#10060;</td><td>&#9989;</td></tr>
+<tr><td><strong>Daily task checklist</strong></td><td>&#9989;</td><td>&#9989;</td><td>&#9989;</td><td>&#10060;</td><td>&#10060;</td></tr>
+<tr><td><strong>Discharge queue view</strong></td><td>&#10060;</td><td>&#9989;</td><td>&#9989;</td><td>&#128202; Count only</td><td>&#10060;</td></tr>
+</tbody></table></div>
+<div class="cl cls"><div class="clic">&#9989;</div><div>All access control rules are enforced <strong>server-side</strong> through API route middleware. A nurse cannot approve a discharge by calling the API directly; the server rejects unauthorized mutations with HTTP 403.</div></div>
+</div>
+<div class="sec" style="padding-top:0">
+<div class="sdiv"></div>
+<div class="qh" style="border-left-color:var(--acc2)"><div class="qn" style="color:#67e8f9">Question 02 / 04</div><div class="qt">Functional Prototype &amp; Deployment</div><div class="qd">A functional prototype built with AI tooling, deployable working link and all basic screens demonstrating core workflows.</div></div>
+<div class="cl cls"><div class="clic">&#128640;</div><div><strong>Live Deployment:</strong> <a href="https://quarantine-treatment-facility-manag.vercel.app" target="_blank">https://quarantine-treatment-facility-manag.vercel.app</a><br/><strong>Source Code:</strong> <a href="https://github.com/heart4sid/Quarantine-Treatment-Facility-Management-App" target="_blank">https://github.com/heart4sid/Quarantine-Treatment-Facility-Management-App</a></div></div>
+<h2>Tech Stack</h2>
+<div class="cg">
+<div class="card"><h4>Frontend</h4><p>Next.js 16 (App Router), React 19, TypeScript, Tailwind CSS, Framer Motion for micro-animations</p></div>
+<div class="card"><h4>Backend &amp; Auth</h4><p>Next.js Server Actions &amp; API Routes, Better Auth (session management), Drizzle ORM, Zod schema validation</p></div>
+<div class="card"><h4>Database &amp; Infra</h4><p>PostgreSQL (Neon serverless), Vercel (zero-config deployment), GitHub Actions CI/CD pipeline</p></div>
+</div>
+<h2>Implemented Screens &amp; Workflows</h2>
+<div class="tw"><table>
+<thead><tr><th>Screen / Route</th><th>User Role</th><th>Key Working Features</th><th>Status</th></tr></thead>
+<tbody>
+<tr><td><strong>Login / Auth</strong><br/><code>/</code></td><td>All roles</td><td>Role-based station selector, PIN/password login, Fast Staff Switch (PIN: <code>1234</code>)</td><td><span class="pill pb">Live &#9989;</span></td></tr>
+<tr><td><strong>Nurse Station</strong><br/><code>/dashboard/nurse</code></td><td>Nurse</td><td>Daily patient task list, temperature logging form, measured/unmeasured status, fever auto-flag, duplicate-entry warning</td><td><span class="pill pb">Live &#9989;</span></td></tr>
+<tr><td><strong>Doctor Station</strong><br/><code>/dashboard/doctor</code></td><td>Doctor</td><td>Prioritized patient list, fever-free streak counter, visit notes, discharge approval, no-temperature warning with exception logging</td><td><span class="pill pb">Live &#9989;</span></td></tr>
+<tr><td><strong>Beds &amp; Intake</strong><br/><code>/dashboard/beds</code></td><td>Admin</td><td>Real-time bed map (74 beds), patient admission form, auto-block at capacity, bed auto-release on discharge</td><td><span class="pill pb">Live &#9989;</span></td></tr>
+<tr><td><strong>Discharge Queue</strong><br/><code>/dashboard/discharge-queue</code></td><td>Admin + Doctor</td><td>Discharge-eligible patient list, doctor approval workflow, admin execution, outcome logging (Cured/Deceased/Transferred)</td><td><span class="pill pb">Live &#9989;</span></td></tr>
+<tr><td><strong>Waitlist</strong><br/><code>/dashboard/waitlist</code></td><td>Admin</td><td>Patients queued when at 74/74 capacity, auto-promote on bed release</td><td><span class="pill pb">Live &#9989;</span></td></tr>
+<tr><td><strong>Analytics</strong><br/><code>/dashboard/analytics</code></td><td>Facility Head</td><td>Live mortality rate vs 85% benchmark, occupancy chart, avg. length of stay, daily task completion rate, mortality alert threshold</td><td><span class="pill pb">Live &#9989;</span></td></tr>
+<tr><td><strong>Facility Overview</strong><br/><code>/dashboard/facility</code></td><td>All (read)</td><td>High-level KPIs, occupancy gauge, current census overview</td><td><span class="pill pb">Live &#9989;</span></td></tr>
+</tbody></table></div>
+<h2>Demo Credentials</h2>
+<div class="card"><p>The app uses a <strong>station-based login</strong> where staff select their role at a shared device. Use Fast Staff Switch (top-right on dashboard) to switch roles instantly for demo.</p><div style="display:flex;gap:12px;flex-wrap:wrap;margin-top:12px">
+<div style="background:var(--s2);border:1px solid var(--bdr);border-radius:8px;padding:12px 16px;font-size:13px"><div style="color:var(--mut);font-size:11px;margin-bottom:4px">Fast Switch PIN</div><code style="font-size:16px;letter-spacing:.2em">1234</code></div>
+<div style="background:var(--s2);border:1px solid var(--bdr);border-radius:8px;padding:12px 16px;font-size:13px"><div style="color:var(--mut);font-size:11px;margin-bottom:4px">Nurse Login</div><code>nurse@facility.com / nurse123</code></div>
+<div style="background:var(--s2);border:1px solid var(--bdr);border-radius:8px;padding:12px 16px;font-size:13px"><div style="color:var(--mut);font-size:11px;margin-bottom:4px">Doctor Login</div><code>doctor@facility.com / doctor123</code></div>
+<div style="background:var(--s2);border:1px solid var(--bdr);border-radius:8px;padding:12px 16px;font-size:13px"><div style="color:var(--mut);font-size:11px;margin-bottom:4px">Admin Login</div><code>admin@facility.com / admin123</code></div>
+</div></div>
+</div>
+<div class="sec" style="padding-top:0">
+<div class="sdiv"></div>
+<div class="qh" style="border-left-color:var(--acc3)"><div class="qn" style="color:#c4b5fd">Question 03 / 04</div><div class="qt">Logical Constraints for Developers</div><div class="qd">Additional logical constraints not immediately apparent from screen designs - when to show warnings, edge cases, business rules, and system behaviors.</div></div>
+<div class="cl clw"><div class="clic">&#9888;&#65039;</div><div>These constraints represent the hidden complexity that separates a working prototype from a clinically safe production system. Each item below would be <strong>invisible from UI wireframes alone</strong> but is critical to implement correctly.</div></div>
+<div class="card">
+<div class="con"><div class="cn">1</div><div><div class="ct">Temperature Entry: Append-Only, Never Overwrite</div><div class="cd">If a nurse logs a second temperature for the same patient on the same calendar day, the system must warn ("Already logged today - confirm re-entry?") and append the new entry to the audit trail - never silently overwrite the original. Clinical calculations (fever streak) use the latest reading of the day, but the full entry history is retained for audit integrity. Silent overwrite is a patient-safety failure.</div><div><span class="ctg csf">Patient Safety</span><span class="ctg cdt">Data Integrity</span></div></div></div>
+<div class="con"><div class="cn">2</div><div><div class="ct">Fever Streak Reset: Any Single Fever Reading Resets the Counter</div><div class="cd">Even if a patient has earlier normal readings on the same calendar day, a single fever reading (100.4F / 38C) resets the discharge-eligibility streak to 0. Patient safety takes precedence over convenience. Do not average daily readings; use the worst reading per day for streak logic. A doctor reviewing a 2-day streak must be certain those 2 days had no fever reading at all.</div><div><span class="ctg csf">Patient Safety</span></div></div></div>
+<div class="con"><div class="cn">3</div><div><div class="ct">"Day" is Calendar Day (Midnight Boundary), Not Rolling 24 Hours</div><div class="cd">A nurse's "measured today" status resets at 00:00 facility local time, not 24 hours after the last log. Critical for shift handover clarity: logging at 23:55 and at 00:05 next day are valid for their respective dates. The "3-day streak" for discharge eligibility counts 3 consecutive calendar days, not 72 hours. Build time zone handling explicitly - never rely on server UTC with no offset.</div><div><span class="ctg cbz">Business Logic</span><span class="ctg cux">UX</span></div></div></div>
+<div class="con"><div class="cn">4</div><div><div class="ct">Doctor-Before-Nurse Visit: Warn and Log Exception, Do Not Hard-Block</div><div class="cd">If a doctor attempts to visit a patient with no temperature recorded today, show warning: "No temperature recorded today - recommend nurse measurement first." However, the system must allow the doctor to proceed (clinical urgency exists), but must require a mandatory reason field and log this as an exception in the audit trail. Hard-blocking creates dangerous workarounds such as fake temperature entries.</div><div><span class="ctg csf">Patient Safety</span><span class="ctg cdt">Audit</span></div></div></div>
+<div class="con"><div class="cn">5</div><div><div class="ct">Discharge Requires Explicit Doctor Sign-Off - Never Auto-Discharge</div><div class="cd">The system auto-flags a patient as "Discharge Eligible" after 3 consecutive fever-free calendar days, but must never execute the discharge automatically. The doctor must actively confirm, because clinical edge cases exist: relapse risk, pending lab results, transport readiness. Once the doctor approves, the discharge moves to Admin queue for execution. A 2-step (doctor approves then admin executes) workflow is mandatory, not a simplification.</div><div><span class="ctg csf">Patient Safety</span><span class="ctg cbz">Workflow</span></div></div></div>
+<div class="con"><div class="cn">6</div><div><div class="ct">Bed Capacity Hard Cap: 74 Beds - No Silent Overbooking</div><div class="cd">At 74/74 occupied beds, the admission form must hard-block new admissions with a clear error message and offer a waitlist option. The capacity check must be a server-side atomic transaction - not just a client-side UI check - to prevent a race condition where two simultaneous admissions both see "73/74" and both succeed, resulting in 75 occupied beds. Use a database-level lock or optimistic concurrency check.</div><div><span class="ctg cbz">Business Logic</span><span class="ctg cdt">Concurrency</span></div></div></div>
+<div class="con"><div class="cn">7</div><div><div class="ct">Role-Based Write Restrictions: Enforced Server-Side, Not UI-Only</div><div class="cd">A nurse must not be able to approve a discharge by calling the API directly, bypassing the UI. A doctor must not be able to log a temperature. Admin must not be able to alter clinical data. These restrictions must be validated in every API route/server action handler, not just hidden from the UI. Every mutation endpoint must verify the session user's role before executing any database write.</div><div><span class="ctg csc">Security</span><span class="ctg cbz">Compliance</span></div></div></div>
+<div class="con"><div class="cn">8</div><div><div class="ct">Mortality Rate Calculation: Exclude Currently-Admitted Patients</div><div class="cd">Facility mortality rate = deceased / (discharged + deceased). Patients still admitted are excluded from both numerator and denominator. This is clinically correct - admitted patients have unknown outcomes. Alert thresholds (mortality &gt;15%) should use a rolling window (e.g., last 30 days or last 20 completed cases) to avoid false alarms from statistical noise with small sample sizes.</div><div><span class="ctg cbz">Business Logic</span><span class="ctg csf">Quality Monitoring</span></div></div></div>
+<div class="con"><div class="cn">9</div><div><div class="ct">Data Correction: Amend, Do Not Delete - Require Reason Code</div><div class="cd">Any correction to a logged temperature or outcome must create an amendment record rather than silently updating the original. The amendment must capture: original value, corrected value, timestamp, correcting user, and a mandatory reason code. No hard deletes of clinical data should ever be possible - this is a compliance requirement equivalent to HIPAA audit integrity standards.</div><div><span class="ctg cdt">Data Integrity</span><span class="ctg csc">Compliance</span></div></div></div>
+<div class="con"><div class="cn">10</div><div><div class="ct">Offline Resilience: Queue Locally, Sync on Reconnect</div><div class="cd">Clinical settings often have poor connectivity. Nurse temperature logging and doctor visit notes should queue locally (IndexedDB / service worker) if the network is unavailable and sync when connectivity is restored. The UI must clearly indicate "offline mode - will sync." Synced entries must carry the original timestamp of the local entry, not the sync time - otherwise the audit trail is misleading.</div><div><span class="ctg cux">UX</span><span class="ctg cdt">Data Integrity</span></div></div></div>
+<div class="con"><div class="cn">11</div><div><div class="ct">Fever Threshold: Configurable, Not Hard-Coded</div><div class="cd">The fever detection threshold (100.4F / 38C) must be stored as a facility-level configuration value in the database, not hard-coded in application logic. Facility policies may differ (some use 37.5C), and the value may need updating without a code deployment. All historical temperature classifications should be recalculated when the threshold changes, or at minimum a warning shown that historical flags used the old threshold.</div><div><span class="ctg cbz">Business Logic</span><span class="ctg cux">Configuration</span></div></div></div>
+<div class="con"><div class="cn">12</div><div><div class="ct">Waitlist Auto-Promotion: FIFO with Notification, Not Silent</div><div class="cd">When a bed is freed by a discharge, the system should not auto-admit the next waitlist patient (clinical assessment may still be needed). Instead, it should surface the next waitlist patient to Admin with a notification/queue prompt: "Bed available - [Patient Name] is next in queue (waiting X hours)." FIFO ordering is required unless the Admin manually re-prioritizes with a logged reason.</div><div><span class="ctg cbz">Business Logic</span><span class="ctg cux">UX</span></div></div></div>
+</div>
+<h2 style="margin-top:28px">Non-Functional Constraints Summary</h2>
+<div class="tw"><table>
+<thead><tr><th>Category</th><th>Constraint</th><th>Target</th></tr></thead>
+<tbody>
+<tr><td><strong>Availability</strong></td><td>System must remain usable in degraded-connectivity clinical environments</td><td>99.9% uptime; offline-first logging</td></tr>
+<tr><td><strong>Performance</strong></td><td>Task lists and dashboards must load at full 74-patient occupancy</td><td>&lt;2 seconds</td></tr>
+<tr><td><strong>Security</strong></td><td>All clinical data encrypted at rest and in transit; RBAC server-side</td><td>Zero trust model</td></tr>
+<tr><td><strong>Compliance</strong></td><td>HIPAA-equivalent: least-privilege access, audit logging, no hard deletes</td><td>Every write attributed to user + timestamp</td></tr>
+<tr><td><strong>Scalability</strong></td><td>Bed capacity configurable, not hardcoded to 74</td><td>N-bed support via config</td></tr>
+<tr><td><strong>Usability</strong></td><td>Optimized for shared shift-based tablets; minimal taps to log temperature</td><td>&lt;3 taps from patient list to logged entry</td></tr>
+</tbody></table></div>
+</div>
+<div class="sec" style="padding-top:0">
+<div class="sdiv"></div>
+<div class="qh" style="border-left-color:var(--grn)"><div class="qn" style="color:#6ee7b7">Question 04 / 04</div><div class="qt">Sprint Planning &amp; Feature Prioritization</div><div class="qd">Using v2 features with priority weighting: High = 6 pts, Medium = 2 pts, Low = 1 pt. Team velocity: 40 story points / sprint. Maximizing value across two 2-week sprints.</div></div>
+<div class="cl cli"><div class="clic">&#128208;</div><div><strong>Scoring:</strong> High = <code>6 pts value</code> | Medium = <code>2 pts value</code> | Low = <code>1 pt value</code><br/><strong>Velocity:</strong> 40 story points per 2-week sprint. Story points measure engineering effort. Value scores measure business impact. Goal: maximize value subject to capacity constraint.</div></div>
+<h2>v2 Feature Backlog with Scoring</h2>
+<div class="tw"><table>
+<thead><tr><th>#</th><th>Feature (v2)</th><th>Priority</th><th>Value</th><th>SP</th><th>Val/SP</th><th>Rationale</th></tr></thead>
+<tbody>
+<tr><td>F1</td><td><strong>Push Notifications &amp; Real-Time Alerts</strong><br/><small>Discharge-eligible, overdue tasks, mortality threshold alerts</small></td><td><span class="pill ph">High</span></td><td>6</td><td>8</td><td><strong>0.75</strong></td><td>Directly solves the delayed discharge metric; highest operational ROI</td></tr>
+<tr><td>F2</td><td><strong>Advanced Analytics &amp; Trend Dashboards</strong><br/><small>Rolling mortality, LOS trends, staff workload, CSV export</small></td><td><span class="pill ph">High</span></td><td>6</td><td>10</td><td><strong>0.60</strong></td><td>Enables quality oversight; builds on existing analytics scaffold in v1</td></tr>
+<tr><td>F3</td><td><strong>Treatment &amp; Medication Tracking</strong><br/><small>Structured treatment plans, administration logs, missed-dose alerts</small></td><td><span class="pill ph">High</span></td><td>6</td><td>13</td><td><strong>0.46</strong></td><td>Deepens clinical utility; doctors currently limited to free-text notes</td></tr>
+<tr><td>F4</td><td><strong>Multi-Facility / Multi-Ward Support</strong><br/><small>Facility as first-class entity, Regional Admin, cross-facility dashboards</small></td><td><span class="pill pm">Medium</span></td><td>2</td><td>21</td><td><strong>0.10</strong></td><td>High effort, low immediate value if expansion is not confirmed near-term</td></tr>
+<tr><td>F5</td><td><strong>Patient / Family-Facing Status View</strong><br/><small>Secure status link (no PHI), discharge notification to family</small></td><td><span class="pill pm">Medium</span></td><td>2</td><td>8</td><td><strong>0.25</strong></td><td>Reduces inbound family phone calls; medium effort, meaningful experience</td></tr>
+<tr><td>F6</td><td><strong>Lab &amp; External System Integration</strong><br/><small>API-based lab result ingestion, HL7/FHIR-compatible layer</small></td><td><span class="pill pm">Medium</span></td><td>2</td><td>18</td><td><strong>0.11</strong></td><td>High effort; dependent on lab system availability; low v2 urgency</td></tr>
+<tr><td>F7</td><td><strong>Configurable Notification Preferences</strong><br/><small>Per-role push/SMS/in-app, quiet hours for shift workers</small></td><td><span class="pill pl">Low</span></td><td>1</td><td>5</td><td><strong>0.20</strong></td><td>Nice-to-have polish; low SP cost, pairs naturally with F1</td></tr>
+<tr><td>F8</td><td><strong>Readmission Tracking</strong><br/><small>Flag patients readmitted within configurable window; quality signal</small></td><td><span class="pill pl">Low</span></td><td>1</td><td>6</td><td><strong>0.17</strong></td><td>Useful long-term quality signal; low priority until v1 discharge data matures</td></tr>
+<tr><td>F9</td><td><strong>Staff Workload Analytics</strong><br/><small>Tasks per shift, completion rates by staff member</small></td><td><span class="pill pl">Low</span></td><td>1</td><td>5</td><td><strong>0.20</strong></td><td>Extends F2; can be added to Sprint 1 at low incremental cost</td></tr>
+</tbody></table></div>
+<h2>Sprint 1 Plan (40 SP Budget)</h2>
+<div class="cl cls"><div class="clic">&#127919;</div><div><strong>Sprint 1 Goal:</strong> Deliver the highest-value v2 features operating within the existing single-facility architecture - no new infrastructure required. Focus: reduce staff response latency and deepen clinical analytics.</div></div>
+<div class="sc"><div class="sh"><div class="stitle">Sprint 1 &mdash; "Reduce Latency &amp; Deepen Visibility" (Weeks 1&ndash;2)</div><div class="sscore">36 SP | 19 pts value</div></div>
+<div class="sb">
+<div class="si"><div class="spts">8</div><div><strong>F1 &mdash; Push Notifications &amp; Real-Time Alerts</strong> <span class="pill ph" style="margin-left:8px">High &bull; 6 val</span><div style="font-size:12px;color:var(--mut);margin-top:4px">Core: discharge-eligible push to doctor, overdue task alert to nurse/admin, mortality threshold alert to Facility Head. Browser push via Web Push API; in-app notification bell as fallback.</div></div></div>
+<div class="si"><div class="spts">10</div><div><strong>F2 &mdash; Advanced Analytics &amp; Trend Dashboards</strong> <span class="pill ph" style="margin-left:8px">High &bull; 6 val</span><div style="font-size:12px;color:var(--mut);margin-top:4px">Rolling 7/30-day mortality trends, LOS over time, daily task completion heatmap, CSV export. Builds on the existing analytics page scaffold from v1.</div></div></div>
+<div class="si"><div class="spts">8</div><div><strong>F5 &mdash; Patient / Family-Facing Status View</strong> <span class="pill pm" style="margin-left:8px">Medium &bull; 2 val</span><div style="font-size:12px;color:var(--mut);margin-top:4px">Secure tokenized status link (no login required), no PHI - status-only view. Reduces inbound family inquiry burden on Admin; best value-to-SP ratio among Medium features at 0.25.</div></div></div>
+<div class="si"><div class="spts">5</div><div><strong>F7 &mdash; Configurable Notification Preferences</strong> <span class="pill pl" style="margin-left:8px">Low &bull; 1 val</span><div style="font-size:12px;color:var(--mut);margin-top:4px">Pairs naturally with F1 in the same sprint; low SP cost; avoids alert fatigue complaints immediately after F1 launch.</div></div></div>
+<div class="si"><div class="spts">5</div><div><strong>F9 &mdash; Staff Workload Analytics</strong> <span class="pill pl" style="margin-left:8px">Low &bull; 1 val</span><div style="font-size:12px;color:var(--mut);margin-top:4px">Extends F2 dashboards with minimal additional effort since the data is already being collected; completion rate by staff member, tasks per shift.</div></div></div>
+<div style="display:flex;justify-content:flex-end;margin-top:12px;padding-top:12px;border-top:1px solid var(--bdr)"><div style="text-align:right"><div style="font-size:12px;color:var(--mut)">Sprint Capacity Used</div><div style="font-size:18px;font-weight:700;color:#fff">36 / 40 SP</div><div style="font-size:12px;color:#6ee7b7">4 SP buffer for bugs / tech debt</div></div></div>
+</div></div>
+<h2 style="margin-top:22px">Sprint 2 Plan (40 SP Budget)</h2>
+<div class="cl cli"><div class="clic">&#128300;</div><div><strong>Sprint 2 Goal:</strong> Add clinical depth (treatment tracking) and long-term quality monitoring (readmission). Defer multi-facility and lab integration to a separate infrastructure initiative given their high SP cost relative to confirmed near-term value.</div></div>
+<div class="sc"><div class="sh"><div class="stitle">Sprint 2 &mdash; "Clinical Depth &amp; Quality Signals" (Weeks 3&ndash;4)</div><div class="sscore">19 SP | 7 pts value</div></div>
+<div class="sb">
+<div class="si"><div class="spts">13</div><div><strong>F3 &mdash; Treatment &amp; Medication Tracking</strong> <span class="pill ph" style="margin-left:8px">High &bull; 6 val</span><div style="font-size:12px;color:var(--mut);margin-top:4px">Structured treatment plans (medication, dosage, frequency), nurse medication administration logging, missed-dose alerts, treatment history in patient record. Deferred to Sprint 2 due to higher SP cost (13), but highest value feature remaining.</div></div></div>
+<div class="si"><div class="spts">6</div><div><strong>F8 &mdash; Readmission Tracking</strong> <span class="pill pl" style="margin-left:8px">Low &bull; 1 val</span><div style="font-size:12px;color:var(--mut);margin-top:4px">Flag patients readmitted within a configurable window. Requires v1 discharge data to have matured; Sprint 2 timing is ideal once the facility has accumulated enough discharge records.</div></div></div>
+<div style="padding:12px 0;border-top:1px solid var(--bdr);margin-top:8px"><div style="font-size:13px;color:var(--mut)"><strong style="color:var(--lgt)">Deferred (post-Sprint 2):</strong> F4 (Multi-facility - 21 SP, needs separate infrastructure planning) and F6 (Lab integration - 18 SP, depends on lab system API availability). Both require dedicated stakeholder buy-in before proceeding.</div></div>
+<div style="display:flex;justify-content:flex-end;margin-top:12px;padding-top:12px;border-top:1px solid var(--bdr)"><div style="text-align:right"><div style="font-size:12px;color:var(--mut)">Sprint Capacity Used</div><div style="font-size:18px;font-weight:700;color:#fff">19 / 40 SP</div><div style="font-size:12px;color:#60a5fa">21 SP available for tech debt or scope additions</div></div></div>
+</div></div>
+<h2 style="margin-top:28px">Sprint Plan Summary</h2>
+<div class="tw"><table>
+<thead><tr><th>Sprint</th><th>Features</th><th>SP Used</th><th>Value Delivered</th><th>Key Outcome</th></tr></thead>
+<tbody>
+<tr><td><strong>Sprint 1</strong></td><td>F1, F2, F5, F7, F9</td><td>36 / 40</td><td><strong>19 pts</strong></td><td>Staff response latency reduced; family communication automated; analytics deepened</td></tr>
+<tr><td><strong>Sprint 2</strong></td><td>F3, F8</td><td>19 / 40</td><td><strong>7 pts</strong></td><td>Clinical depth via treatment tracking; long-term quality monitoring enabled</td></tr>
+<tr><td><strong>Total (2 sprints)</strong></td><td>7 of 9 features</td><td>55 / 80</td><td><strong>26 pts</strong></td><td>7 of 9 v2 features shipped; F4 and F6 deferred as separate infrastructure initiative</td></tr>
+</tbody></table></div>
+<div class="cl clw"><div class="clic">&#128161;</div><div><strong>Why defer F4 (Multi-facility) and F6 (Lab integration)?</strong><br/>F4 costs 21 SP - more than half a sprint - for a feature whose value depends on confirmed near-term expansion plans. If expansion is not imminent, this is premature abstraction. F6 costs 18 SP and depends on external lab systems having APIs; without confirmed integration partners, this is speculative infrastructure. Both belong in a separate architecture initiative with dedicated stakeholder buy-in.</div></div>
+</div>
+<div class="footer">
+<p><strong>Siddharth Kumar Mishra</strong> &mdash; TPM Assessment Submission</p>
+<p style="margin-top:6px;font-size:12px">Quarantine &amp; Treatment Facility Management App &bull; Built with Next.js 16 &bull; Deployed on Vercel</p>
+<p style="margin-top:4px;font-size:12px"><a href="https://quarantine-treatment-facility-manag.vercel.app">Live App</a> &nbsp;&bull;&nbsp; <a href="https://github.com/heart4sid/Quarantine-Treatment-Facility-Management-App">GitHub Repository</a></p>
+</div>
+</body></html>
+
