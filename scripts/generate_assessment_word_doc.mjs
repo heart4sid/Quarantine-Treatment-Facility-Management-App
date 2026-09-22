@@ -515,6 +515,41 @@ async function buildDoc() {
           createBulletP('Demonstration 2 (Doctor Precondition Warning): ', 'Visiting an unmeasured patient prompts HTTP 428 warning ("No temperature recorded today"). Entering an auditable clinical rationale allows the doctor to proceed while preserving medical safety governance.'),
           createBulletP('Demonstration 3 (Two-Stage Discharge Sign-off): ', 'Patient J. Doe (Bed A-01, 3 days fever-free) appears in the doctor discharge queue. Doctor approves discharge; record transitions to Admin queue; Admin executes physical discharge; Bed A-01 automatically resets to Available status.'),
           createBulletP('Automated Testing Suite: ', '384 passing unit and property-based tests across 14 test suites in Vitest covering state machines, concurrent bed allocation, temperature streak calculations, and RBAC rules.'),
+          new Paragraph({ spacing: { after: 120 } }),
+
+          createSubheaderP('2.5 Video Demonstrations & Artifact Links'),
+          createBodyP('Direct video recordings of the live workflows are embedded in the repository and available for playback:'),
+          createTable(
+            ['Video Demonstration Item', 'File Path in Repo / Workspace', 'Description & Verified Workflow'],
+            [
+              [
+                'Nurse Temperature Logging Demo\n(1.7 MB WebP Video)',
+                'docs/videos/nurse_temperature_logging_demo.webp\npublic/videos/nurse_temperature_logging_demo.webp',
+                'Demonstrates recording bedside temperature for Bed A-05 (Patient K. Bradley, 36.8°C), instant status transition to green "Measured Today", shift progress incrementing from 60% to 80%, and streak updating.'
+              ],
+              [
+                'Station Login & Auth Demo\n(3.0 MB WebP Video)',
+                'docs/videos/station_login_demo.webp\npublic/videos/station_login_demo.webp',
+                'Demonstrates the 3 login modes: 1-Tap clinical station launch, email/password credential chips, and the tactile bedside PIN numpad (PIN: 1234).'
+              ],
+              [
+                'Full Clinical Prototype Showcase\n(7.0 MB WebP Video)',
+                'docs/videos/full_clinical_prototype_showcase.webp\npublic/videos/full_clinical_prototype_showcase.webp',
+                'Complete end-to-end operational walkthrough across Nurse Station, Doctor Rounding Station, 74-Bed Capacity Management, and Facility Executive Analytics.'
+              ]
+            ],
+            [25, 35, 40]
+          ),
+          new Paragraph({ spacing: { after: 120 } }),
+          createCallout(
+            'DIRECT VIDEO PLAYBACK LINKS',
+            '• Nurse Temperature Action Video: https://github.com/heart4sid/Quarantine-Treatment-Facility-Management-App/raw/main/docs/videos/nurse_temperature_logging_demo.webp\n' +
+            '• Station Login Video: https://github.com/heart4sid/Quarantine-Treatment-Facility-Management-App/raw/main/docs/videos/station_login_demo.webp\n' +
+            '• Full Showcase Video: https://github.com/heart4sid/Quarantine-Treatment-Facility-Management-App/raw/main/docs/videos/full_clinical_prototype_showcase.webp\n' +
+            'Note: WebP video files open and play natively in Google Chrome, Microsoft Edge, VLC Media Player, or any modern web browser.',
+            ACCENT_BLUE,
+            HIGHLIGHT_BG
+          ),
           new Paragraph({ spacing: { after: 200 } }),
 
           // -------------------------------------------------------------
@@ -732,8 +767,18 @@ async function buildDoc() {
 
   const buffer = await Packer.toBuffer(doc);
   const outPath = path.resolve('docs', 'TPM_Assessment_Siddharth_Kumar_Mishra.docx');
-  fs.writeFileSync(outPath, buffer);
-  console.log(`Successfully generated Word Document at: ${outPath} (${buffer.length} bytes)`);
+  try {
+    fs.writeFileSync(outPath, buffer);
+    console.log(`Successfully generated Word Document at: ${outPath} (${buffer.length} bytes)`);
+  } catch (err) {
+    if (err.code === 'EBUSY') {
+      const fallbackPath = path.resolve('docs', 'TPM_Assessment_Siddharth_Kumar_Mishra_Latest.docx');
+      fs.writeFileSync(fallbackPath, buffer);
+      console.log(`Primary file was open in Word. Wrote latest update to: ${fallbackPath} (${buffer.length} bytes)`);
+    } else {
+      throw err;
+    }
+  }
 }
 
 buildDoc().catch(err => {
