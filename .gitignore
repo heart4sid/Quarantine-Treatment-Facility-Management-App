@@ -1,30 +1,41 @@
+# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
+
 # dependencies
-node_modules
-/quarantine-app/node_modules
+/node_modules
 /.pnp
 .pnp.*
-
-# next.js
-/quarantine-app/.next/
-/quarantine-app/out/
+.yarn/*
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/versions
 
 # testing
-/quarantine-app/coverage/
+/coverage
 
-# environment files
-.env*
-!.env.example
+# next.js
+/.next/
+/out/
 
-# vercel
-.vercel
-/quarantine-app/.vercel
+# production
+/build
 
-# logs
-*.log
+# misc
+.DS_Store
+*.pem
+
+# debug
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+.pnpm-debug.log*
 
-# system
-.DS_Store
-Thumbs.db
+# env files (can opt-in for committing if needed)
+.env*
+
+# vercel
+.vercel
+
+# typescript
+*.tsbuildinfo
+next-env.d.ts

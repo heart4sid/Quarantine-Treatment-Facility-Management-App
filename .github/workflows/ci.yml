@@ -26,9 +26,6 @@ jobs:
   typecheck:
     name: TypeScript
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: quarantine-app
     steps:
       - uses: actions/checkout@v4
 
@@ -37,7 +34,7 @@ jobs:
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: "npm"
-          cache-dependency-path: quarantine-app/package-lock.json
+          cache-dependency-path: package-lock.json
 
       - name: Install dependencies
         run: npm ci --legacy-peer-deps
@@ -49,9 +46,6 @@ jobs:
   lint:
     name: ESLint
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: quarantine-app
     steps:
       - uses: actions/checkout@v4
 
@@ -60,7 +54,7 @@ jobs:
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: "npm"
-          cache-dependency-path: quarantine-app/package-lock.json
+          cache-dependency-path: package-lock.json
 
       - name: Install dependencies
         run: npm ci --legacy-peer-deps
@@ -72,9 +66,6 @@ jobs:
   unit-tests:
     name: Unit Tests
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: quarantine-app
     steps:
       - uses: actions/checkout@v4
 
@@ -83,7 +74,7 @@ jobs:
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: "npm"
-          cache-dependency-path: quarantine-app/package-lock.json
+          cache-dependency-path: package-lock.json
 
       - name: Install dependencies
         run: npm ci --legacy-peer-deps
@@ -96,7 +87,7 @@ jobs:
         if: always()
         with:
           name: coverage-report
-          path: quarantine-app/coverage/
+          path: coverage/
           retention-days: 14
 
   # ─── Job 4: Integration tests (with test DB) ─────────────────────────────────
@@ -118,9 +109,6 @@ jobs:
           --health-interval 5s
           --health-timeout 5s
           --health-retries 10
-    defaults:
-      run:
-        working-directory: quarantine-app
     steps:
       - uses: actions/checkout@v4
 
@@ -129,7 +117,7 @@ jobs:
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: "npm"
-          cache-dependency-path: quarantine-app/package-lock.json
+          cache-dependency-path: package-lock.json
 
       - name: Install dependencies
         run: npm ci --legacy-peer-deps
@@ -153,9 +141,6 @@ jobs:
     name: Next.js Build
     runs-on: ubuntu-latest
     needs: [typecheck, lint, unit-tests]
-    defaults:
-      run:
-        working-directory: quarantine-app
     steps:
       - uses: actions/checkout@v4
 
@@ -164,7 +149,7 @@ jobs:
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: "npm"
-          cache-dependency-path: quarantine-app/package-lock.json
+          cache-dependency-path: package-lock.json
 
       - name: Install dependencies
         run: npm ci --legacy-peer-deps
@@ -176,16 +161,13 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: nextjs-build
-          path: quarantine-app/.next/
+          path: .next/
           retention-days: 7
 
   # ─── Job 6: Security audit ────────────────────────────────────────────────────
   audit:
     name: Security Audit
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: quarantine-app
     steps:
       - uses: actions/checkout@v4
 
