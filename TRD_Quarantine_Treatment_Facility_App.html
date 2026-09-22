@@ -1,0 +1,1810 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}</style><style>:root{color-scheme:light dark;--md-bg:#fff;--md-text:rgba(0,0,0,.8);--md-muted:rgba(0,0,0,.6);--md-fill:rgba(0,0,0,.04);--md-fill-strong:rgba(0,0,0,.06);--md-rule:rgba(0,0,0,.1);--md-rule-strong:rgba(0,0,0,.16);--md-link:hsl(210 100% 45%)}@media (prefers-color-scheme:dark){:root:where(:not([data-theme="light"])){--md-bg:#0d0d0d;--md-text:rgba(255,255,255,.85);--md-muted:rgba(255,255,255,.6);--md-fill:rgba(255,255,255,.06);--md-fill-strong:rgba(255,255,255,.09);--md-rule:rgba(255,255,255,.14);--md-rule-strong:rgba(255,255,255,.22);--md-link:hsl(210 100% 72%)}}:root[data-theme="dark"]{color-scheme:dark;--md-bg:#0d0d0d;--md-text:rgba(255,255,255,.85);--md-muted:rgba(255,255,255,.6);--md-fill:rgba(255,255,255,.06);--md-fill-strong:rgba(255,255,255,.09);--md-rule:rgba(255,255,255,.14);--md-rule-strong:rgba(255,255,255,.22);--md-link:hsl(210 100% 72%)}:root[data-theme="light"]{color-scheme:light}@media print{:root,:root[data-theme="dark"]{color-scheme:light;--md-bg:#fff;--md-text:rgba(0,0,0,.8);--md-muted:rgba(0,0,0,.6);--md-fill:rgba(0,0,0,.04);--md-fill-strong:rgba(0,0,0,.06);--md-rule:rgba(0,0,0,.1);--md-rule-strong:rgba(0,0,0,.16);--md-link:hsl(210 100% 45%)}}body{background:var(--md-bg);color:var(--md-text);max-width:720px;margin:0 auto;padding:32px;display:flex;flex-direction:column;gap:10px;font:14px/1.55 -apple-system,BlinkMacSystemFont,'SF Pro','Segoe UI',sans-serif;overflow-wrap:break-word}body>:first-child{margin-top:0}h1,h2,h3,h4,h5,h6{margin:6px 0 0;line-height:1.25;font-weight:600;text-wrap:balance}h1{font-size:1.35em}h2{font-size:1.15em;color:var(--md-muted)}h3,h4,h5,h6{font-size:1em}p,ul,ol,blockquote,table,pre,hr{margin:0}strong{font-weight:600}a{color:var(--md-link);text-decoration:none}a:hover{text-decoration:underline}ul,ol{display:flex;flex-direction:column;gap:6px;padding-left:22px}ul{list-style:disc}ol{list-style:decimal}:is(li,td,th)>*+:is(p,ul,ol,blockquote){margin-top:6px}blockquote{display:flex;flex-direction:column;gap:10px;border-left:2px solid var(--md-rule);padding-left:10px;color:var(--md-muted)}:not(pre)>code{background:var(--md-fill);padding:1px 3px;border-radius:4px;font:.92em 'SF Mono',ui-monospace,Menlo,Consolas,monospace}a>code{background:none;color:inherit}pre{background:var(--md-fill);padding:10px 12px;border-radius:6px;overflow-x:auto;font:12px/1.5 'SF Mono',ui-monospace,Menlo,Consolas,monospace;margin-block:4px}pre code{background:none;padding:0;font:inherit}table{width:100%;border-collapse:separate;border-spacing:2px;font:inherit}th,td{padding:6px 8px;border-radius:3px;text-align:left;vertical-align:top}th{background:var(--md-fill-strong);font-weight:600}td{background:var(--md-fill)}:is(th,td) :not(pre)>code{background:transparent}hr{border:0;border-top:1px solid var(--md-rule-strong);margin-block:10px}img{max-width:100%;height:auto;border-radius:4px}</style>
+</head><body>
+<h1>Technical Requirements Document</h1>
+<h2>Quarantine &amp; Treatment Facility Management App — PRD v1 (MVP) + PRD v2</h2>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Document owner</strong></td>
+<td>Engineering Lead</td>
+</tr>
+<tr>
+<td><strong>Status</strong></td>
+<td>Draft for engineering review</td>
+</tr>
+<tr>
+<td><strong>TRD version</strong></td>
+<td>1.0 (2026-09-22)</td>
+</tr>
+<tr>
+<td><strong>Implements</strong></td>
+<td><code>PRD_Quarantine_Facility_App.md</code> (v1.0) and <code>PRD_Quarantine_Facility_App_v2.md</code> (v2.0)</td>
+</tr>
+<tr>
+<td><strong>Hosting constraint</strong></td>
+<td>Vercel Hobby (free) + free-tier managed services</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h2>0. Read this first: what &quot;free on Vercel&quot; can and cannot carry</h2>
+<p>The architecture in this document is designed to <strong>run on free tiers</strong>. But three findings from the Vercel/Neon terms materially change how the free tier should be used for a clinical system. Decide on these before writing code.</p>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>Finding</th>
+<th>Implication</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>F1</strong></td>
+<td>Vercel's Hobby plan is restricted to <strong>non-commercial, personal use</strong> (<a href="https://vercel.com/docs/plans/hobby">Vercel Hobby docs</a>).</td>
+<td>A system that runs a live treatment facility is unlikely to fit that definition. Treat Hobby as fine for <strong>development, staging, demos, and a pilot with synthetic data</strong>. Check Vercel's fair-use guidelines for your specific organization (e.g., non-profit/government) before going live.</td>
+</tr>
+<tr>
+<td><strong>F2</strong></td>
+<td><strong>No HIPAA BAA on Hobby.</strong> The BAA is a paid add-on for Pro (listed at $350/month) or available on Enterprise (<a href="https://vercel.com/kb/guide/is-vercel-hipaa-compliant">Vercel HIPAA guide</a>). Neon's free plan is similarly a dev/side-project tier.</td>
+<td><strong>Do not store real patient data on free tiers</strong> where HIPAA or an equivalent health-data law applies. The PRDs require PHI-equivalent protection (v1 §6, v2 §6), and a legal/compliance review must confirm what your jurisdiction demands.</td>
+</tr>
+<tr>
+<td><strong>F3</strong></td>
+<td>Hobby has <strong>no uptime SLA</strong> and, per third-party summaries of Vercel's behavior, a project that exceeds a Hobby limit is <strong>paused rather than billed</strong> — an outage, not an overage (<a href="https://zplatform.ai/guides/is-vercel-free/">summary</a>).</td>
+<td>The PRD's 99.9% uptime target cannot be <em>guaranteed</em> on free tiers. This TRD compensates with offline-first clients, a degraded read-only mode, and a paper-fallback runbook (§13).</td>
+</tr>
+</tbody>
+</table>
+<p><strong>How this TRD handles it — a two-stage plan:</strong></p>
+<ul>
+<li><strong>Stage 0 (free, $0):</strong> Everything in this document runs on Vercel Hobby + Neon Free + free monitoring. Use it for build-out, UAT, staff training, and demos with <strong>synthetic data only</strong>.</li>
+<li><strong>Stage 1 (production, minimum paid):</strong> Same codebase, no re-architecture. Move to Vercel Pro (+ BAA if required), and Neon Launch (roughly $19/month for an always-on 0.25 CU compute — see §14). §15 lists exact &quot;graduation triggers&quot;.</li>
+</ul>
+<p><strong>Portability rule (non-negotiable):</strong> Use only portable building blocks — Next.js, standard Postgres, standard HTTP endpoints. Anything Vercel-specific (Vercel Cron, Vercel Blob/KV) is wrapped behind a thin adapter so the app can move to a container host or VPS without rewrites.</p>
+<hr>
+<h2>1. Purpose, scope and traceability</h2>
+<p><strong>Purpose.</strong> Translate PRD v1 and v2 into implementable technical requirements: architecture, data model, domain logic, APIs, security, infrastructure, and delivery sequencing.</p>
+<p><strong>In scope.</strong> All functional and non-functional requirements in PRD v1 §4–6 and PRD v2 §4–6.</p>
+<p><strong>Out of scope (matches PRDs).</strong> Billing/insurance, full EHR, telemedicine, public patient portal, medication interaction checking, HL7 v2/MLLP listeners (see §11.5).</p>
+<p><strong>Requirement ID scheme used below:</strong> <code>V1-x.y</code> = PRD v1 section, <code>V2-x.y</code> = PRD v2 section.</p>
+<table>
+<thead>
+<tr>
+<th>Release</th>
+<th>Technical modules</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>v1 (MVP)</strong></td>
+<td>Auth/RBAC, admissions &amp; beds, temperature logging, doctor visits, streak/eligibility engine, discharge workflow, outcomes &amp; mortality, dashboards, audit trail, offline sync</td>
+</tr>
+<tr>
+<td><strong>v2a</strong></td>
+<td>Notifications &amp; alerts, analytics/trends</td>
+</tr>
+<tr>
+<td><strong>v2b</strong></td>
+<td>Treatment &amp; medication tracking</td>
+</tr>
+<tr>
+<td><strong>v2c</strong></td>
+<td>Multi-facility/ward, Regional Admin</td>
+</tr>
+<tr>
+<td><strong>v2d</strong></td>
+<td>Family status view, lab/FHIR ingestion</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h2>2. Key technical decisions (summary)</h2>
+<table>
+<thead>
+<tr>
+<th>Area</th>
+<th>Decision</th>
+<th>Why</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Framework</td>
+<td><strong>Next.js (App Router) + TypeScript</strong>, deployed to Vercel</td>
+<td>First-class Vercel support; one codebase for UI + API</td>
+</tr>
+<tr>
+<td>Database</td>
+<td><strong>Postgres (Neon)</strong> via <strong>Drizzle ORM</strong></td>
+<td>Relational integrity, partial unique indexes, RLS, triggers — all needed for clinical invariants</td>
+</tr>
+<tr>
+<td>Multi-tenancy</td>
+<td><strong><code>facility_id</code> on every tenant table from v1 day one</strong>, enforced with Postgres RLS in v2c</td>
+<td>Avoids a risky retrofit; satisfies V2 §5.3 at the DB layer</td>
+</tr>
+<tr>
+<td>Auth</td>
+<td><strong>Auth.js or Better Auth</strong>, users/sessions in our own DB; TOTP MFA for Doctor/Admin/System roles</td>
+<td>No paid auth vendor; data stays in our database</td>
+</tr>
+<tr>
+<td>Offline</td>
+<td><strong>PWA</strong> (service worker + IndexedDB outbox), client-generated idempotency keys</td>
+<td>V1 §5.10 offline resilience</td>
+</tr>
+<tr>
+<td>Real-time</td>
+<td><strong>Short polling + Web Push</strong>, no WebSockets</td>
+<td>Vercel Functions don't hold long-lived connections</td>
+</tr>
+<tr>
+<td>Scheduling</td>
+<td><strong>External scheduler ticks</strong> (5–15 min) + Vercel Cron (daily only) + event-driven triggers</td>
+<td>Hobby cron is once/day</td>
+</tr>
+<tr>
+<td>Audit</td>
+<td><strong>Append-only tables</strong>, DB-enforced immutability, amendments as new rows</td>
+<td>V1 §4.7, §5.9</td>
+</tr>
+<tr>
+<td>Derived state</td>
+<td>Streak, eligibility, mortality are <strong>computed from source rows</strong>, not stored counters</td>
+<td>No drift; auditable; testable</td>
+</tr>
+<tr>
+<td>Push/Email</td>
+<td>Web Push (VAPID) and email (free tier) by default; SMS behind a <strong>paid, pluggable adapter</strong></td>
+<td>SMS is not free anywhere</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h2>3. Vercel free-tier constraints and design responses</h2>
+<p>Limits change often and sources disagree on some numbers (e.g., maximum function duration). <strong>Re-verify against <a href="https://vercel.com/docs/limits">vercel.com/docs/limits</a> and each vendor's pricing page before each phase.</strong></p>
+<table>
+<thead>
+<tr>
+<th>Constraint (Hobby / free tier)</th>
+<th>Design response</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Cron: once per day max, ~hour-level timing precision, UTC only</strong> (<a href="https://crontap.com/blog/vercel-cron-hourly-limit-and-how-to-beat-it">source</a>)</td>
+<td>Vercel Cron used <em>only</em> for daily jobs. Sub-daily work uses an external scheduler hitting an authenticated, idempotent <code>/api/cron/tick</code>, plus event-driven triggers on writes. Handlers must tolerate missed/duplicate invocations.</td>
+</tr>
+<tr>
+<td><strong>Function duration limits</strong> (default is short; reported ceilings differ between sources)</td>
+<td>Every handler designed for <strong>&lt;10 s</strong>. Long work (rollups, exports) is chunked and resumable.</td>
+</tr>
+<tr>
+<td><strong>No WebSockets / long-lived connections</strong></td>
+<td>Polling with ETags + Web Push &quot;doorbell&quot;. No SSE dependence.</td>
+</tr>
+<tr>
+<td><strong>Runtime logs retained ~1 hour on Hobby</strong> (<a href="https://zplatform.ai/guides/is-vercel-free/">summary</a>)</td>
+<td>The <strong>audit trail lives in Postgres, never in platform logs.</strong> Errors go to Sentry (free) and an <code>error_events</code> table.</td>
+</tr>
+<tr>
+<td><strong>Single region on Hobby</strong></td>
+<td>Pick the region nearest the facility; co-locate the Neon database in the same region.</td>
+</tr>
+<tr>
+<td><strong>1 concurrent build</strong></td>
+<td>Keep builds fast; batch merges.</td>
+</tr>
+<tr>
+<td><strong>Hobby teams can't connect Git <em>organization</em>-owned repos</strong> (<a href="https://vercel.com/docs/limits">limits doc</a>)</td>
+<td>Host the repo under a personal GitHub account for Stage 0. Not an issue after moving to Pro.</td>
+</tr>
+<tr>
+<td><strong>Deployment Protection / password protection is paid</strong></td>
+<td>Don't rely on it. All access control is app-level (§7). Non-production environments use synthetic data only.</td>
+</tr>
+<tr>
+<td><strong>Neon Free: 0.5 GB storage, 100 CU-hours/month per project, compute scales to zero after 5 min (fixed on free), suspends when hours run out</strong> (<a href="https://neon.com/faqs/free-plan-limits-and-quotas">Neon FAQ</a>)</td>
+<td>Storage is ample (§14). <strong>Compute hours are the binding constraint</strong>: a 0.25 CU compute awake &gt;~400 h/month exhausts the quota. See §14 for math and mitigation.</td>
+</tr>
+<tr>
+<td><strong>Short PITR/backup window on free DB</strong></td>
+<td>Own nightly encrypted logical backup to off-platform storage (§13.4).</td>
+</tr>
+<tr>
+<td><strong>Web Application Firewall free on Hobby (basic)</strong></td>
+<td>Enable; add app-level rate limiting on top (§7.5).</td>
+</tr>
+<tr>
+<td><strong>Function request body limit (~4.5 MB)</strong></td>
+<td>Lab payloads and sync batches capped at 1 MB with pagination.</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h2>4. System architecture</h2>
+<pre class="mermaid">flowchart TB
+  subgraph Clients
+    PWA[&#34;Staff PWA (tablets/phones)&lt;br/&gt;Service worker + IndexedDB outbox&#34;]
+    FAM[&#34;Family status page&lt;br/&gt;(no login, token link)&#34;]
+    LAB[&#34;Lab systems&lt;br/&gt;(FHIR over HTTPS)&#34;]
+  end
+
+  subgraph Vercel[&#34;Vercel (Hobby for Stage 0)&#34;]
+    APP[&#34;Next.js App Router&lt;br/&gt;RSC + Route Handlers&#34;]
+    VCRON[&#34;Vercel Cron (daily)&#34;]
+  end
+
+  SCHED[&#34;External scheduler&lt;br/&gt;5-15 min tick (no PHI in ping)&#34;]
+  DB[(&#34;Neon Postgres&lt;br/&gt;RLS + append-only tables&#34;)]
+  PUSH[&#34;Web Push (VAPID)&#34;]
+  MSG[&#34;Email / SMS providers&lt;br/&gt;(adapter)&#34;]
+  OBS[&#34;Sentry + uptime monitor&#34;]
+  BKP[&#34;Encrypted off-platform backups&#34;]
+
+  PWA --&gt;|HTTPS| APP
+  FAM --&gt;|HTTPS| APP
+  LAB --&gt;|HTTPS + API key| APP
+  APP --&gt; DB
+  VCRON --&gt; APP
+  SCHED --&gt; APP
+  APP --&gt; PUSH
+  APP --&gt; MSG
+  APP --&gt; OBS
+  DB -. nightly dump .-&gt; BKP
+</pre>
+<h3>4.1 Technology stack</h3>
+<table>
+<thead>
+<tr>
+<th>Layer</th>
+<th>Choice</th>
+<th>Free-tier note</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>UI</td>
+<td>React (Next.js), Tailwind, shadcn/ui</td>
+<td>—</td>
+</tr>
+<tr>
+<td>Data fetching</td>
+<td>React Server Components + SWR for polled views</td>
+<td>—</td>
+</tr>
+<tr>
+<td>Validation</td>
+<td>Zod (shared client/server schemas)</td>
+<td>—</td>
+</tr>
+<tr>
+<td>ORM / migrations</td>
+<td>Drizzle ORM + drizzle-kit</td>
+<td>—</td>
+</tr>
+<tr>
+<td>DB driver</td>
+<td><code>@neondatabase/serverless</code> with the <strong>pooled</strong> connection string</td>
+<td>Required for serverless connection behavior</td>
+</tr>
+<tr>
+<td>Auth</td>
+<td>Auth.js or Better Auth (sessions in DB) + <code>otplib</code> for TOTP</td>
+<td>No vendor cost</td>
+</tr>
+<tr>
+<td>Offline</td>
+<td>Serwist (service worker), Dexie (IndexedDB)</td>
+<td>—</td>
+</tr>
+<tr>
+<td>Push</td>
+<td><code>web-push</code> library, VAPID keys</td>
+<td>Free. iOS needs the PWA installed to the home screen</td>
+</tr>
+<tr>
+<td>Email</td>
+<td>Transactional email free tier (e.g., Resend)</td>
+<td>Verify current free quota</td>
+</tr>
+<tr>
+<td>SMS</td>
+<td>Adapter interface; provider TBD (paid per message)</td>
+<td><strong>Not free.</strong> Feature-flagged off in Stage 0</td>
+</tr>
+<tr>
+<td>Rate limiting</td>
+<td>DB-backed token bucket (or Upstash Redis free tier)</td>
+<td>—</td>
+</tr>
+<tr>
+<td>PDF export</td>
+<td><code>pdf-lib</code> or <code>@react-pdf/renderer</code></td>
+<td>Avoid headless Chromium — too heavy for serverless bundles</td>
+</tr>
+<tr>
+<td>Monitoring</td>
+<td>Sentry (free), external uptime pinger</td>
+<td>Ping a <strong>static</strong> health route to avoid waking the DB</td>
+</tr>
+<tr>
+<td>Testing</td>
+<td>Vitest, fast-check, Playwright, k6</td>
+<td>—</td>
+</tr>
+<tr>
+<td>CI</td>
+<td>GitHub Actions</td>
+<td>Free-minute limits apply to private repos</td>
+</tr>
+</tbody>
+</table>
+<h3>4.2 Code layout (monorepo, single Next.js app)</h3>
+<pre><code>/src
+  /domain          # pure TS: streak, eligibility, mortality, capacity rules (no I/O)
+  /db              # drizzle schema, migrations, RLS policies, SQL views
+  /server          # services (admissions, temps, visits, meds...), authz, notifications
+  /app/api/v1      # route handlers (thin: authn -&gt; authz -&gt; service)
+  /app/(staff)     # staff UI
+  /app/s/[token]   # family status page (v2d)
+  /adapters        # scheduler, sms, email, push, storage (portable interfaces)
+  /lib             # crypto, time (facility-local day), idempotency, errors
+</code></pre>
+<p><strong>Rule:</strong> all clinical rules live in <code>/domain</code> as pure functions with 100% branch coverage. Route handlers contain no business logic.</p>
+<hr>
+<h2>5. Data model</h2>
+<h3>5.1 Global conventions</h3>
+<ul>
+<li>Primary keys: <strong>UUIDv7</strong> (time-ordered; also generated client-side for offline records).</li>
+<li>Every tenant table has <code>facility_id uuid NOT NULL</code>.</li>
+<li>Timestamps: <code>timestamptz</code>, UTC. Display and day-boundary logic use <code>facilities.timezone</code> (IANA).</li>
+<li><strong>No hard deletes anywhere.</strong> Clinical tables are append-only (§5.4). Non-clinical tables use <code>deactivated_at</code>.</li>
+<li>Temperature stored in <strong>°C</strong> canonically; display unit is a facility setting.</li>
+<li>PII fields (patient name, phone, email, address) are <strong>application-layer encrypted</strong> (AES-256-GCM, key in encrypted env var) with a keyed hash &quot;blind index&quot; where equality lookup is needed.</li>
+</ul>
+<h3>5.2 Entity overview</h3>
+<pre class="mermaid">erDiagram
+  FACILITY ||--o{ WARD : has
+  WARD ||--o{ BED : has
+  FACILITY ||--o{ USER_FACILITY_SCOPE : scopes
+  USER ||--o{ USER_FACILITY_SCOPE : has
+  PATIENT ||--o{ ADMISSION : has
+  BED ||--o{ ADMISSION : occupies
+  ADMISSION ||--o{ TEMPERATURE_READING : has
+  ADMISSION ||--o{ VISIT : has
+  ADMISSION ||--o{ DISCHARGE_APPROVAL : has
+  ADMISSION ||--o{ TREATMENT_PLAN : has
+  TREATMENT_PLAN ||--o{ MEDICATION_ORDER : contains
+  MEDICATION_ORDER ||--o{ MED_SLOT : schedules
+  MED_SLOT ||--o{ MED_ADMINISTRATION : records
+  PATIENT ||--o{ FAMILY_CONTACT : has
+  FAMILY_CONTACT ||--o{ FAMILY_LINK : issues
+  PATIENT ||--o{ LAB_RESULT : has
+  USER ||--o{ AUDIT_LOG : acts
+</pre>
+<h3>5.3 Table specifications</h3>
+<p><strong>Identity &amp; tenancy</strong></p>
+<table>
+<thead>
+<tr>
+<th>Table</th>
+<th>Key columns / notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>facilities</code></td>
+<td><code>id</code>, <code>name</code>, <code>timezone</code>, <code>network_id</code> (nullable, v2c), settings JSON: <code>fever_threshold_c</code> (default 38.0), <code>discharge_streak_days</code> (default 3), <code>mortality_alert_threshold</code> (default 0.15), <code>mortality_alert_min_sample</code>, <code>mortality_window_days</code> (7/30), <code>occupancy_alert_pct</code> (0.90), <code>readmission_window_days</code>, <code>require_pharmacist_verification</code></td>
+</tr>
+<tr>
+<td><code>wards</code></td>
+<td><code>facility_id</code>, <code>name</code></td>
+</tr>
+<tr>
+<td><code>beds</code></td>
+<td><code>facility_id</code>, <code>ward_id</code>, <code>label</code>, <code>is_active</code>. <strong>Capacity = count of active beds</strong> — the &quot;74&quot; is 74 rows, never a constant (V1 §6 scalability, V2 §4.3)</td>
+</tr>
+<tr>
+<td><code>users</code></td>
+<td><code>email</code>, <code>password_hash</code>/passkey, <code>mfa_secret_enc</code>, <code>deactivated_at</code></td>
+</tr>
+<tr>
+<td><code>user_roles</code></td>
+<td><code>user_id</code>, <code>role</code> enum (<code>nurse</code>, <code>doctor</code>, <code>admin_staff</code>, <code>facility_head</code>, <code>system_admin</code>, <code>pharmacist</code>, <code>regional_admin</code>)</td>
+</tr>
+<tr>
+<td><code>user_facility_scopes</code></td>
+<td><code>user_id</code>, <code>facility_id</code> (v1: exactly one row per user)</td>
+</tr>
+<tr>
+<td><code>shifts</code>, <code>patient_assignments</code></td>
+<td><code>shifts(facility_id, name, start_time, end_time)</code>; <code>patient_assignments(admission_id, user_id, shift_date, shift_id)</code> — <strong>required</strong> for &quot;assigned patients&quot; and per-shift metrics; not defined in the PRDs (see §17, G6)</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Clinical core (append-only)</strong></p>
+<table>
+<thead>
+<tr>
+<th>Table</th>
+<th>Key columns / notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>patients</code></td>
+<td><code>id</code>, <code>mrn</code> (nullable), <code>name_enc</code>, <code>dob_enc</code>, <code>identity_hash</code> (HMAC of normalized national ID or equivalent; used for readmission matching), <code>possible_duplicate_of</code></td>
+</tr>
+<tr>
+<td><code>admissions</code></td>
+<td><code>id</code>, <code>patient_id</code>, <code>facility_id</code>, <code>ward_id</code>, <code>bed_id</code>, <code>admitted_at</code>, <code>discharge_eligible_since</code> (set once on transition), <code>closed_at</code>, <code>outcome</code> enum (<code>DISCHARGED_CURED</code>, <code>DECEASED</code>, <code>TRANSFERRED</code>, null while open), <code>readmission_of</code> (nullable FK)</td>
+</tr>
+<tr>
+<td><code>waitlist_entries</code></td>
+<td><code>facility_id</code>, <code>patient_ref</code>, <code>priority</code>, <code>created_at</code>, <code>status</code></td>
+</tr>
+<tr>
+<td><code>temperature_readings</code></td>
+<td><code>id</code>, <code>admission_id</code>, <code>facility_id</code>, <code>value_c</code> (nullable only for void amendments), <code>recorded_at</code> (server), <code>client_recorded_at</code>, <code>local_date</code> (facility-local, computed at insert), <code>recorded_by</code>, <code>is_fever</code>, <code>threshold_c_used</code>, <code>amends_id</code> (nullable), <code>reason_code</code> (required if <code>amends_id</code>), <code>client_uuid</code> (unique, idempotency)</td>
+</tr>
+<tr>
+<td><code>visits</code></td>
+<td><code>id</code>, <code>admission_id</code>, <code>doctor_id</code>, <code>started_at</code>, <code>notes</code>, <code>no_temp_exception</code> bool, <code>exception_reason</code> (<strong>required when exception</strong>)</td>
+</tr>
+<tr>
+<td><code>discharge_approvals</code></td>
+<td><code>admission_id</code>, <code>doctor_id</code>, <code>approved_at</code>, <code>voided_at</code>, <code>void_reason</code></td>
+</tr>
+<tr>
+<td><code>discharge_executions</code></td>
+<td><code>admission_id</code>, <code>admin_id</code>, <code>executed_at</code></td>
+</tr>
+<tr>
+<td><code>audit_log</code></td>
+<td><code>id</code>, <code>at</code>, <code>actor_user_id</code>, <code>facility_id</code>, <code>action</code>, <code>entity</code>, <code>entity_id</code>, <code>before</code>/<code>after</code> JSON (PII fields redacted or encrypted), <code>request_id</code>, <code>ip</code>, <code>device_id</code></td>
+</tr>
+<tr>
+<td><code>access_log</code></td>
+<td>Read access to patient-level records (V1 §6: &quot;access logs retained&quot;)</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Effective-reading view (amendments)</strong></p>
+<pre><code class="language-sql">-- An original reading is superseded once any row amends it. A void amendment has NULL value.
+CREATE VIEW effective_temperature_readings AS
+SELECT r.*
+FROM temperature_readings r
+WHERE r.value_c IS NOT NULL
+  AND NOT EXISTS (SELECT 1 FROM temperature_readings a WHERE a.amends_id = r.id);
+</code></pre>
+<p><strong>v2 tables</strong> — <code>notification_outbox</code>, <code>notification_prefs</code>, <code>notifications</code> (in-app inbox), <code>treatment_plans</code>, <code>medication_orders</code>, <code>med_slots</code>, <code>med_administrations</code>, <code>family_contacts</code>, <code>family_links</code>, <code>lab_results</code>, <code>lab_results_inbox</code>, <code>daily_facility_metrics</code>, <code>feature_flags</code> — specified in §10–§11.</p>
+<h3>5.4 Invariants enforced <strong>in the database</strong> (not just in code)</h3>
+<pre><code class="language-sql">-- 1. One open admission per bed  =&gt; hard guarantee against overbooking (V1 §5.6)
+CREATE UNIQUE INDEX one_open_admission_per_bed
+  ON admissions (bed_id) WHERE closed_at IS NULL;
+
+-- 2. One open admission per patient
+CREATE UNIQUE INDEX one_open_admission_per_patient
+  ON admissions (patient_id) WHERE closed_at IS NULL;
+
+-- 3. Idempotent offline sync
+CREATE UNIQUE INDEX uq_temp_client_uuid ON temperature_readings (client_uuid);
+
+-- 4. Append-only clinical tables
+CREATE FUNCTION forbid_mutation() RETURNS trigger LANGUAGE plpgsql AS $$
+BEGIN RAISE EXCEPTION &#39;% is append-only&#39;, TG_TABLE_NAME; END $$;
+
+CREATE TRIGGER temperature_readings_immutable
+  BEFORE UPDATE OR DELETE ON temperature_readings
+  FOR EACH ROW EXECUTE FUNCTION forbid_mutation();
+-- (repeat for visits, discharge_*, audit_log, med_administrations, lab_results)
+
+-- 5. Least privilege: the app&#39;s DB role cannot rewrite history
+REVOKE UPDATE, DELETE, TRUNCATE ON temperature_readings, visits, audit_log FROM app_role;
+</code></pre>
+<p><code>admissions</code> has a small set of legitimately mutable columns (<code>discharge_eligible_since</code>, <code>closed_at</code>, <code>outcome</code>, <code>bed_id</code> on transfer). These are updated through a single service function, each change writing an <code>audit_log</code> row in the <strong>same transaction</strong>.</p>
+<hr>
+<h2>6. Core domain logic</h2>
+<h3>6.1 Facility-local &quot;day&quot;</h3>
+<p><code>local_date = (recorded_at AT TIME ZONE facilities.timezone)::date</code>, computed <strong>once at insert</strong> and stored. All &quot;today&quot; queries use <code>local_date</code>, never a rolling 24 h window (V1 §5.4). Facility timezone changes are prohibited after go-live (would corrupt <code>local_date</code> history) — admin change requires a migration script.</p>
+<h3>6.2 Fever-free streak and discharge eligibility (V1 §4.3, §5.3)</h3>
+<p>The streak is <strong>derived</strong>, never stored. The DB returns per-day facts; a pure function computes the result.</p>
+<pre><code class="language-ts">// /domain/streak.ts
+export type DayFact = { date: string /* YYYY-MM-DD, facility-local */; anyFever: boolean };
+
+export function computeStreak(days: DayFact[], today: string): number {
+  // days: one entry per local_date that has &gt;=1 effective reading, sorted ascending.
+  const byDate = new Map(days.map(d =&gt; [d.date, d.anyFever]));
+  let streak = 0;
+  for (let d = today; ; d = prevDate(d)) {
+    const fever = byDate.get(d);
+    if (fever === undefined) {
+      // Today not yet measured is neutral; an unmeasured PAST day breaks the streak.
+      if (d === today) continue;
+      break;
+    }
+    if (fever) break;
+    streak++;
+  }
+  return streak;
+}
+export const isDischargeEligible = (streak: number, n: number) =&gt; streak &gt;= n;
+</code></pre>
+<pre><code class="language-sql">-- Per-day facts for one admission (input to computeStreak)
+SELECT local_date AS date, bool_or(is_fever) AS any_fever
+FROM effective_temperature_readings
+WHERE admission_id = $1
+GROUP BY local_date
+ORDER BY local_date;
+</code></pre>
+<p><strong>Rules encoded</strong> (see §17 G1–G2 for the PRD ambiguities they resolve):</p>
+<ol>
+<li>A day is a <strong>fever day if <em>any</em> effective reading that day is a fever</strong> (safety-first, V1 §5.3). Erroneous readings are removed via <strong>amendment</strong>, not by re-entering a &quot;better&quot; value.</li>
+<li>A day with <strong>no effective reading breaks the streak</strong> (except today before measurement).</li>
+<li>Eligibility = <code>streak ≥ facility.discharge_streak_days</code> (default 3).</li>
+<li><strong>Edge-triggered event:</strong> on every temperature write/amendment, the service recomputes eligibility inside the transaction. On transition <em>not eligible → eligible</em> it sets <code>admissions.discharge_eligible_since</code> and emits <code>patient.discharge_eligible</code>. On <em>eligible → not eligible</em> it clears the flag and voids any un-executed approval (§6.3).</li>
+<li>Property-based tests (fast-check) must cover: date gaps, DST changes, amendments, multiple same-day readings, midnight-boundary timestamps, and threshold changes mid-stay (threshold is snapshotted per reading).</li>
+</ol>
+<h3>6.3 Discharge lifecycle (V1 §4.4, §5.5)</h3>
+<pre class="mermaid">stateDiagram-v2
+  [*] --&gt; Admitted
+  Admitted --&gt; DischargeEligible: streak &gt;= N (derived, edge event)
+  DischargeEligible --&gt; Admitted: fever logged / reading amended
+  DischargeEligible --&gt; ApprovedForDischarge: doctor approves
+  ApprovedForDischarge --&gt; Admitted: fever logged before execution (approval voided)
+  ApprovedForDischarge --&gt; Discharged: admin executes (eligibility re-validated)
+  Admitted --&gt; Deceased: doctor records outcome
+  Admitted --&gt; Transferred: doctor records outcome
+  Discharged --&gt; [*]
+  Deceased --&gt; [*]
+  Transferred --&gt; [*]
+</pre>
+<ul>
+<li><strong>Approval</strong> requires role <code>doctor</code> and current eligibility. <strong>Execution</strong> requires role <code>admin_staff</code>, a non-voided approval, and <strong>re-validated eligibility inside the same transaction</strong>; on failure the API returns <code>409 ELIGIBILITY_CHANGED</code> and the UI asks the doctor to re-review.</li>
+<li>Execution transaction: insert <code>discharge_executions</code>, set <code>closed_at</code> and <code>outcome = DISCHARGED_CURED</code>, free the bed (implicit: the partial unique index stops counting a closed admission), write <code>audit_log</code>, enqueue notifications.</li>
+<li>No auto-discharge under any condition.</li>
+</ul>
+<h3>6.4 Admission, capacity and waitlist (V1 §4.1, §5.6)</h3>
+<pre><code class="language-sql">-- Inside a transaction: claim a free bed atomically
+SELECT b.id
+FROM beds b
+WHERE b.ward_id = $1 AND b.is_active
+  AND NOT EXISTS (SELECT 1 FROM admissions a WHERE a.bed_id = b.id AND a.closed_at IS NULL)
+ORDER BY b.label
+FOR UPDATE SKIP LOCKED
+LIMIT 1;
+</code></pre>
+<ul>
+<li>Row returned → insert admission (unique index is the final guard against races).</li>
+<li>No row → return <code>409 AT_CAPACITY</code> and create a <code>waitlist_entries</code> row. The UI shows the waitlist.</li>
+<li>When a bed frees up, emit <code>bed.available</code> to Admin (v2a) with the next waitlisted entry.</li>
+<li>Occupancy alerts (V2 §4.1, ≥90%) are evaluated on every admit and discharge (event-driven, no scheduler needed).</li>
+</ul>
+<h3>6.5 Doctor visit ordering (V1 §4.3, §5.2)</h3>
+<ul>
+<li>Starting a visit when no effective reading exists for <code>local_date = today</code> returns <code>428 TEMP_MISSING_TODAY</code> with a warning payload.</li>
+<li>The client may retry with <code>{ proceedAnyway: true, exceptionReason: &quot;...&quot; }</code> (non-empty, min length enforced). Stored as <code>visits.no_temp_exception = true</code>.</li>
+<li>Exception counts feed the Facility Head dashboard.</li>
+</ul>
+<h3>6.6 Duplicate temperature entries (V1 §4.2, §5.1)</h3>
+<ul>
+<li>Second entry on the same <code>local_date</code>: API returns <code>409 DUPLICATE_TODAY</code> with the existing reading; client asks &quot;already logged — confirm re-entry?&quot;; on confirm it re-sends with <code>confirmDuplicate: true</code>.</li>
+<li>Both rows are retained. Because any fever reading makes the day a fever day (§6.2), a duplicate can never hide a fever.</li>
+<li><strong>Nurses can amend only their own same-day readings; doctors can amend any reading; all amendments require a reason code</strong> (§17 G10).</li>
+</ul>
+<h3>6.7 Mortality (V1 §4.5, §5.8)</h3>
+<pre><code>mortality_rate = DECEASED / (DISCHARGED_CURED + DECEASED)      // TRANSFERRED excluded; open admissions excluded
+</code></pre>
+<ul>
+<li>Computed over a <strong>rolling window</strong> (7 and 30 days, configurable) and lifetime.</li>
+<li>Alert fires only when <code>(cured + deceased) &gt;= mortality_alert_min_sample</code> <strong>and</strong> <code>rate &gt; threshold</code> — avoids small-sample noise. Optionally use a Wilson lower bound instead of the point estimate.</li>
+<li>Alert is edge-triggered with hysteresis (re-arms after the rate falls below <code>threshold − 2 pts</code>) to prevent alert spam.</li>
+<li>Dashboard shows rate against the 85% survival benchmark.</li>
+</ul>
+<h3>6.8 Amendments and corrections (V1 §5.9)</h3>
+<p>Correction = new row with <code>amends_id</code>, <code>reason_code</code> (enum + optional free text), acting user. Outcome corrections follow the same pattern via an <code>admission_outcome_amendments</code> table. Streak and mortality recompute automatically because they derive from effective rows; recomputation may flip eligibility, handled by §6.2 rule 4.</p>
+<hr>
+<h2>7. Security, authentication and authorization</h2>
+<h3>7.1 Authentication</h3>
+<ul>
+<li>Email + password (Argon2id) or passkeys; <strong>TOTP MFA required</strong> for <code>doctor</code>, <code>admin_staff</code>, <code>facility_head</code>, <code>system_admin</code>, <code>regional_admin</code>.</li>
+<li><strong>Shared bedside tablets (V1 §6 usability):</strong> fast user switching via short PIN <em>after</em> an initial full login on the device; 5-minute idle lock; every write is attributed to the currently unlocked user, never the device. PIN attempts rate-limited and lock after 5 failures.</li>
+<li>Sessions: HttpOnly, Secure, SameSite=Lax cookies; server-side session records (revocable by System Admin).</li>
+</ul>
+<h3>7.2 Authorization matrix (server-enforced; V1 §3, §5.7, V2 §3)</h3>
+<table>
+<thead>
+<tr>
+<th>Action</th>
+<th style="text-align:center">Nurse</th>
+<th style="text-align:center">Doctor</th>
+<th style="text-align:center">Admin</th>
+<th style="text-align:center">Fac. Head</th>
+<th style="text-align:center">Sys Admin</th>
+<th style="text-align:center">Pharmacist</th>
+<th style="text-align:center">Regional</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Log temperature</td>
+<td style="text-align:center">✅</td>
+<td style="text-align:center">❌</td>
+<td style="text-align:center">❌</td>
+<td style="text-align:center">❌</td>
+<td style="text-align:center">❌</td>
+<td style="text-align:center">❌</td>
+<td style="text-align:center">❌</td>
+</tr>
+<tr>
+<td>Amend reading</td>
+<td style="text-align:center">own, same day</td>
+<td style="text-align:center">✅</td>
+<td style="text-align:center">❌</td>
+<td style="text-align:center">❌</td>
+<td style="text-align:center">❌</td>
+<td style="text-align:center">❌</td>
+<td style="text-align:center">❌</td>
+</tr>
+<tr>
+<td>Start visit / notes</td>
+<td style="text-align:center">❌</td>
+<td style="text-align:center">✅</td>
+<td style="text-align:center">❌</td>
+<td style="text-align:center">❌</td>
+<td style="text-align:center">❌</td>
+<td style="text-align:center">❌</td>
+<td style="text-align:center">❌</td>
+</tr>
+<tr>
+<td>Approve discharge</td>
+<td style="text-align:center">❌</td>
+<td style="text-align:center">✅</td>
+<td style="text-align:center">❌</td>
+<td style="text-align:center">❌</td>
+<td style="text-align:center">❌</td>
+<td style="text-align:center">❌</td>
+<td style="text-align:center">❌</td>
+</tr>
+<tr>
+<td>Admit / assign bed / execute discharge</td>
+<td style="text-align:center">❌</td>
+<td style="text-align:center">❌</td>
+<td style="text-align:center">✅</td>
+<td style="text-align:center">❌</td>
+<td style="text-align:center">❌</td>
+<td style="text-align:center">❌</td>
+<td style="text-align:center">❌</td>
+</tr>
+<tr>
+<td>Record DECEASED / TRANSFERRED</td>
+<td style="text-align:center">❌</td>
+<td style="text-align:center">✅</td>
+<td style="text-align:center">❌</td>
+<td style="text-align:center">❌</td>
+<td style="text-align:center">❌</td>
+<td style="text-align:center">❌</td>
+<td style="text-align:center">❌</td>
+</tr>
+<tr>
+<td>Create treatment plan</td>
+<td style="text-align:center">❌</td>
+<td style="text-align:center">✅</td>
+<td style="text-align:center">❌</td>
+<td style="text-align:center">❌</td>
+<td style="text-align:center">❌</td>
+<td style="text-align:center">❌</td>
+<td style="text-align:center">❌</td>
+</tr>
+<tr>
+<td>Log medication administration</td>
+<td style="text-align:center">✅</td>
+<td style="text-align:center">❌</td>
+<td style="text-align:center">❌</td>
+<td style="text-align:center">❌</td>
+<td style="text-align:center">❌</td>
+<td style="text-align:center">❌</td>
+<td style="text-align:center">❌</td>
+</tr>
+<tr>
+<td>Verify medication order</td>
+<td style="text-align:center">❌</td>
+<td style="text-align:center">❌</td>
+<td style="text-align:center">❌</td>
+<td style="text-align:center">❌</td>
+<td style="text-align:center">❌</td>
+<td style="text-align:center">✅</td>
+<td style="text-align:center">❌</td>
+</tr>
+<tr>
+<td>View patient-level clinical data</td>
+<td style="text-align:center">assigned</td>
+<td style="text-align:center">✅ (facility)</td>
+<td style="text-align:center">admin-only fields</td>
+<td style="text-align:center">❌</td>
+<td style="text-align:center">❌</td>
+<td style="text-align:center">orders only</td>
+<td style="text-align:center">❌</td>
+</tr>
+<tr>
+<td>Facility dashboards</td>
+<td style="text-align:center">own tasks</td>
+<td style="text-align:center">own tasks</td>
+<td style="text-align:center">queues</td>
+<td style="text-align:center">✅</td>
+<td style="text-align:center">❌</td>
+<td style="text-align:center">❌</td>
+<td style="text-align:center">aggregate only</td>
+</tr>
+<tr>
+<td>Manage users/roles/audit</td>
+<td style="text-align:center">❌</td>
+<td style="text-align:center">❌</td>
+<td style="text-align:center">❌</td>
+<td style="text-align:center">❌</td>
+<td style="text-align:center">✅</td>
+<td style="text-align:center">❌</td>
+<td style="text-align:center">❌</td>
+</tr>
+</tbody>
+</table>
+<p>Authorization is a single <code>authorize(user, action, resource)</code> function in <code>/server/authz</code>, called by <strong>every</strong> route handler and covered by a generated test that walks the matrix.</p>
+<h3>7.3 Tenant isolation via Postgres RLS (V2 §5.3)</h3>
+<pre><code class="language-sql">ALTER TABLE admissions ENABLE ROW LEVEL SECURITY;
+ALTER TABLE admissions FORCE ROW LEVEL SECURITY;
+
+CREATE POLICY facility_isolation ON admissions
+  USING (facility_id = ANY (string_to_array(current_setting(&#39;app.facility_ids&#39;, true), &#39;,&#39;)::uuid[]));
+-- Repeat for every tenant table.
+</code></pre>
+<p>Every request runs in a transaction that begins with:</p>
+<pre><code class="language-sql">SELECT set_config(&#39;app.user_id&#39;,      $1, true),   -- true = transaction-local (safe with pooled connections)
+       set_config(&#39;app.facility_ids&#39;, $2, true),
+       set_config(&#39;app.role&#39;,         $3, true);
+</code></pre>
+<ul>
+<li>The application DB role <strong>must not own the tables and must not have <code>BYPASSRLS</code>.</strong></li>
+<li><strong>Regional Admin</strong> has <strong>no policy on patient-level tables at all.</strong> They read only <code>daily_facility_metrics</code> (aggregates). Isolation is structural, not a UI choice.</li>
+<li><strong>v1 ships with RLS enabled and a single facility.</strong> v2c then only adds scopes and the Regional role.</li>
+<li>Mandatory automated test: for every tenant table, a user scoped to Facility A gets <strong>zero rows</strong> for Facility B, including through joins, views, and export endpoints.</li>
+</ul>
+<h3>7.4 Data protection</h3>
+<ul>
+<li>TLS everywhere (Vercel default); DB provider encrypts at rest.</li>
+<li>Field-level encryption for direct identifiers (§5.1); keys in Vercel encrypted env vars; key rotation via versioned key IDs stored alongside ciphertext.</li>
+<li><strong>No PHI in</strong>: URLs, push payloads, email subjects, logs, Sentry events (scrub <code>beforeSend</code>), analytics.</li>
+<li>Patient-level read access is written to <code>access_log</code>.</li>
+<li>Security headers: strict CSP, HSTS, <code>X-Frame-Options: DENY</code>, <code>Referrer-Policy: no-referrer</code>.</li>
+</ul>
+<h3>7.5 Abuse protection</h3>
+<ul>
+<li>Rate limits per IP and per user on auth, PIN, family-link and integration endpoints.</li>
+<li>Cron/tick endpoints require <code>Authorization: Bearer $CRON_SECRET</code> (constant-time compare).</li>
+<li>Lab integration endpoints use per-source API keys (stored hashed), optional HMAC request signature, and payload size cap.</li>
+</ul>
+<h3>7.6 Compliance</h3>
+<ul>
+<li>Design to least-privilege, audit logging, retention policy (V1 §6). <strong>Retention period is an open question (V1 §8.4)</strong>; the schema supports retention via archival flags, never deletion.</li>
+<li>Legal review must confirm applicable regime and whether free tiers are acceptable (see F1–F2).</li>
+</ul>
+<hr>
+<h2>8. API design</h2>
+<h3>8.1 Conventions</h3>
+<ul>
+<li>Base path <code>/api/v1</code>; JSON; Zod-validated; errors as RFC 9457 problem+json with stable <code>code</code>.</li>
+<li><strong>Idempotency:</strong> all mutating clinical endpoints accept <code>client_uuid</code> (or <code>Idempotency-Key</code> header); replays return the original result.</li>
+<li>Optimistic concurrency where mutable (<code>admissions</code>) via <code>version</code> column / <code>If-Match</code>.</li>
+<li>Cursor pagination; list endpoints default page size 50.</li>
+<li>Polling endpoints return <code>ETag</code>; clients send <code>If-None-Match</code> and receive <code>304</code> cheaply.</li>
+</ul>
+<h3>8.2 Endpoint catalogue</h3>
+<table>
+<thead>
+<tr>
+<th>Method &amp; path</th>
+<th>Role(s)</th>
+<th>Purpose</th>
+<th>Req</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>POST /admissions</code></td>
+<td>Admin</td>
+<td>Admit (auto-assign or specified bed) or waitlist</td>
+<td>V1-4.1</td>
+</tr>
+<tr>
+<td><code>GET /waitlist</code></td>
+<td>Admin</td>
+<td>View queue</td>
+<td>V1-4.1</td>
+</tr>
+<tr>
+<td><code>GET /tasks/nurse?date=</code></td>
+<td>Nurse</td>
+<td>Assigned patients + measured/not measured</td>
+<td>V1-4.2</td>
+</tr>
+<tr>
+<td><code>POST /admissions/{id}/temperatures</code></td>
+<td>Nurse</td>
+<td>Log reading (<code>DUPLICATE_TODAY</code> handling)</td>
+<td>V1-4.2</td>
+</tr>
+<tr>
+<td><code>POST /temperatures/{id}/amendments</code></td>
+<td>Nurse/Doctor</td>
+<td>Amend/void with reason</td>
+<td>V1-5.9</td>
+</tr>
+<tr>
+<td><code>GET /tasks/doctor?date=</code></td>
+<td>Doctor</td>
+<td>Priority-sorted visit list</td>
+<td>V1-4.3</td>
+</tr>
+<tr>
+<td><code>POST /admissions/{id}/visits</code></td>
+<td>Doctor</td>
+<td>Start visit (<code>TEMP_MISSING_TODAY</code> flow)</td>
+<td>V1-4.3</td>
+</tr>
+<tr>
+<td><code>GET /admissions/{id}/streak</code></td>
+<td>Doctor</td>
+<td>Streak + eligibility</td>
+<td>V1-4.3</td>
+</tr>
+<tr>
+<td><code>POST /admissions/{id}/discharge-approval</code></td>
+<td>Doctor</td>
+<td>Approve</td>
+<td>V1-4.4</td>
+</tr>
+<tr>
+<td><code>GET /discharge-queue</code></td>
+<td>Admin</td>
+<td>Approved, unexecuted</td>
+<td>V1-4.4</td>
+</tr>
+<tr>
+<td><code>POST /admissions/{id}/discharge</code></td>
+<td>Admin</td>
+<td>Execute (re-validates)</td>
+<td>V1-4.4</td>
+</tr>
+<tr>
+<td><code>POST /admissions/{id}/outcome</code></td>
+<td>Doctor</td>
+<td>Deceased / Transferred</td>
+<td>V1-4.5</td>
+</tr>
+<tr>
+<td><code>GET /dashboards/facility</code></td>
+<td>Fac. Head</td>
+<td>Occupancy, mortality, LOS, completion</td>
+<td>V1-4.6</td>
+</tr>
+<tr>
+<td><code>POST /sync</code></td>
+<td>Nurse/Doctor</td>
+<td>Batch upload of offline outbox (≤100 items, ≤1 MB)</td>
+<td>V1-5.10</td>
+</tr>
+<tr>
+<td><code>GET /events?since=cursor</code></td>
+<td>All staff</td>
+<td>Polling feed for in-app notifications</td>
+<td>V2-4.1</td>
+</tr>
+<tr>
+<td><code>POST /push/subscriptions</code></td>
+<td>All staff</td>
+<td>Register Web Push endpoint</td>
+<td>V2-4.1</td>
+</tr>
+<tr>
+<td><code>POST /treatment-plans</code>, <code>POST /medication-orders/{id}/verify</code>, <code>POST /med-slots/{id}/administration</code></td>
+<td>Doctor / Pharm / Nurse</td>
+<td>Medication flows</td>
+<td>V2-4.2</td>
+</tr>
+<tr>
+<td><code>GET /network/metrics</code></td>
+<td>Regional</td>
+<td>Cross-facility aggregates</td>
+<td>V2-4.3</td>
+</tr>
+<tr>
+<td><code>POST /patients/{id}/family-contacts</code>, <code>POST /family-links/{id}/revoke</code></td>
+<td>Admin</td>
+<td>Consent + link management</td>
+<td>V2-4.4</td>
+</tr>
+<tr>
+<td><code>GET /s/{token}</code> <em>(public page)</em></td>
+<td>Family</td>
+<td>Status-only view</td>
+<td>V2-4.4</td>
+</tr>
+<tr>
+<td><code>GET /analytics/*</code>, <code>GET /exports/*.csv|pdf</code></td>
+<td>Fac. Head</td>
+<td>Trends, cohorts, exports</td>
+<td>V2-4.5</td>
+</tr>
+<tr>
+<td><code>POST /integrations/labs/fhir</code></td>
+<td>Lab (API key)</td>
+<td>FHIR Bundle ingestion</td>
+<td>V2-4.6</td>
+</tr>
+<tr>
+<td><code>GET/POST /lab-inbox</code></td>
+<td>Doctor/Admin</td>
+<td>Manual reconcile</td>
+<td>V2-5.6</td>
+</tr>
+<tr>
+<td><code>POST /cron/tick</code>, <code>POST /cron/daily</code></td>
+<td>Scheduler</td>
+<td>Time-based jobs</td>
+<td>§10</td>
+</tr>
+</tbody>
+</table>
+<h3>8.3 Performance approach (V1 §6: &lt;2 s at 74 patients)</h3>
+<ul>
+<li>Indexes: <code>(facility_id, admission_id, local_date)</code> on readings; partial index on open admissions; <code>(facility_id, closed_at)</code>.</li>
+<li>Task-list queries use a <code>LEFT JOIN LATERAL</code> for &quot;latest effective reading today&quot; — one query per list.</li>
+<li>Same-region Vercel + Neon; pooled connection; RSC streaming for dashboards.</li>
+<li>Budget: p95 API ≤ 400 ms warm; page load ≤ 2 s including a Neon cold resume (documented as a few hundred ms).</li>
+</ul>
+<hr>
+<h2>9. Offline-first client (V1 §5.10)</h2>
+<p><strong>Scope:</strong> logging temperatures, starting visits/notes, and medication administration (v2b) must work offline. Admissions, discharge execution, and analytics are online-only.</p>
+<p><strong>Mechanism</strong></p>
+<ol>
+<li>Service worker precaches the app shell and the user's task list; stale-while-revalidate for reads.</li>
+<li>Writes go to an <strong>IndexedDB outbox</strong> with a client-generated UUIDv7 (<code>client_uuid</code>) and <code>client_recorded_at</code>.</li>
+<li>Background Sync (where supported) plus a foreground retry loop flush the outbox via <code>POST /sync</code> in order.</li>
+<li>Server processes each item <strong>independently and idempotently</strong>; response lists per-item results (<code>created</code> / <code>duplicate</code> / <code>rejected</code>+reason).</li>
+<li>UI shows a persistent sync badge (&quot;3 pending&quot;) and never claims a record is saved until the server confirmed it — offline items are visibly &quot;pending&quot;.</li>
+</ol>
+<p><strong>Conflict and integrity rules</strong></p>
+<ul>
+<li>Offline duplicates for the same day are <strong>both stored</strong> (append-only). The advisory &quot;already logged&quot; prompt is best-effort offline.</li>
+<li><code>local_date</code> is derived from <code>client_recorded_at</code> <strong>only if</strong> within an accepted skew of server receipt (default: not in the future, not older than 72 h); otherwise the server flags the row <code>clock_suspect = true</code> and uses server time. Skew above 5 minutes is logged per device.</li>
+<li>Discharge-eligibility events fire when the server processes the write, so delayed sync delays notifications — the UI shows &quot;last synced&quot; prominently so staff know how fresh their view is.</li>
+<li>Outbox is encrypted at rest on the device (Web Crypto, key derived from session) and purged on logout after confirmed sync. Logout with unsynced items requires explicit confirmation.</li>
+</ul>
+<hr>
+<h2>10. Notifications, alerts and scheduling (V2 §4.1, §5.1)</h2>
+<h3>10.1 Event-driven first</h3>
+<p>Most alerts don't need a scheduler; they are emitted <strong>inside the write transaction</strong> that causes them:</p>
+<table>
+<thead>
+<tr>
+<th>Event</th>
+<th>Emitted by</th>
+<th>Recipient</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>patient.discharge_eligible</code></td>
+<td>temperature write (§6.2)</td>
+<td>Assigned doctor</td>
+</tr>
+<tr>
+<td><code>discharge.approved</code></td>
+<td>approval</td>
+<td>Admin queue</td>
+</tr>
+<tr>
+<td><code>bed.available</code></td>
+<td>discharge/transfer</td>
+<td>Admin</td>
+</tr>
+<tr>
+<td><code>occupancy.near_capacity</code> (≥90%)</td>
+<td>admit/discharge</td>
+<td>Facility Head</td>
+</tr>
+<tr>
+<td><code>mortality.threshold_breached</code></td>
+<td>outcome write</td>
+<td>Facility Head</td>
+</tr>
+<tr>
+<td><code>lab.unmatched</code></td>
+<td>lab ingestion</td>
+<td>Admin/Doctor</td>
+</tr>
+</tbody>
+</table>
+<h3>10.2 Guaranteed in-app record; push is a doorbell</h3>
+<ul>
+<li>In the <strong>same transaction</strong> as the event, insert a <code>notifications</code> (in-app inbox) row and a <code>notification_outbox</code> row per channel. → <strong>A clinical alert can never be silently dropped</strong> (V2 §5.1).</li>
+<li>Delivery: attempted immediately after commit (Next.js <code>after()</code>/<code>waitUntil</code>), retried by the tick job with exponential backoff (<code>attempts</code>, <code>next_attempt_at</code>).</li>
+<li>Critical alerts (<code>discharge_eligible</code>, <code>mortality</code>) require <strong>acknowledgment</strong>; unacknowledged after <em>N</em> minutes → escalate to a secondary recipient (Doctor→Admin, Facility Head→System Admin).</li>
+<li><strong>Coalescing / rate limiting:</strong> <code>dedupe_key</code> (e.g., <code>event:admission_id</code>) prevents duplicates; bursts collapse into a digest (&quot;4 patients discharge-eligible&quot;).</li>
+<li><strong>Quiet hours</strong> (per-user prefs) suppress push/SMS for non-critical events; critical events still go in-app and to on-duty staff (design decision — see §17 G11).</li>
+<li><strong>No PHI in payloads:</strong> push text like &quot;1 new discharge-eligible patient — open app&quot; (no name, no bed).</li>
+</ul>
+<h3>10.3 Channels</h3>
+<table>
+<thead>
+<tr>
+<th>Channel</th>
+<th>Stage 0</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>In-app inbox + polling feed (<code>/events</code>, 30 s visible / 2 min hidden)</td>
+<td>✅</td>
+<td>Source of truth</td>
+</tr>
+<tr>
+<td>Web Push (VAPID)</td>
+<td>✅</td>
+<td>iOS requires installed PWA</td>
+</tr>
+<tr>
+<td>Email</td>
+<td>✅ (free tier)</td>
+<td>Family notices, digests</td>
+</tr>
+<tr>
+<td>SMS</td>
+<td>❌ flag off</td>
+<td>Pluggable adapter; pay-per-message; regional sender-registration rules may apply — check before choosing a provider</td>
+</tr>
+</tbody>
+</table>
+<h3>10.4 Time-based jobs</h3>
+<table>
+<thead>
+<tr>
+<th>Job</th>
+<th>Frequency</th>
+<th>Runner</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Notification retry &amp; escalation sweep</td>
+<td>every 5–10 min</td>
+<td>External scheduler → <code>/cron/tick</code></td>
+</tr>
+<tr>
+<td>Overdue-task sweep (nurse &quot;not measured by cutoff&quot;, doctor visits)</td>
+<td>every 15 min</td>
+<td>Tick</td>
+</tr>
+<tr>
+<td>Missed-dose sweep (v2b)</td>
+<td>every 5–10 min</td>
+<td>Tick</td>
+</tr>
+<tr>
+<td>Daily analytics rollup, <code>med_slots</code> horizon extension, housekeeping</td>
+<td>daily</td>
+<td><strong>Vercel Cron</strong> (<code>/cron/daily</code>)</td>
+</tr>
+<tr>
+<td>Encrypted backup</td>
+<td>daily</td>
+<td>GitHub Actions (§13.4)</td>
+</tr>
+<tr>
+<td>Family link expiry</td>
+<td>none</td>
+<td>Checked at read time</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Free-tier scheduler options for the 5–15 min tick:</strong> a free external cron service (e.g., cron-job.org), Upstash QStash free tier, or GitHub Actions <code>schedule</code>. Notes: GitHub-scheduled runs can be delayed and free private-repo minutes are limited (a 10-minute cadence would use ~4,300 minutes/month, above the 2,000 free minutes for private repos — verify current limits). Recommended: <strong>two independent schedulers for redundancy</strong>; the endpoint is idempotent and protected by a Postgres advisory lock so overlapping ticks do nothing harmful. The ping carries <strong>no PHI</strong>, so a third-party scheduler is acceptable.</p>
+<p><code>vercel.json</code> (daily only — Hobby rejects more frequent schedules at deploy time):</p>
+<pre><code class="language-json">{
+  &#34;crons&#34;: [
+    { &#34;path&#34;: &#34;/api/v1/cron/daily&#34;, &#34;schedule&#34;: &#34;0 22 * * *&#34; }
+  ]
+}
+</code></pre>
+<p>Schedules are UTC with hour-level precision; choose a time that always lands after facility-local midnight, and make the job safe to run late.</p>
+<hr>
+<h2>11. v2 module designs</h2>
+<h3>11.1 Treatment &amp; medication (V2 §4.2, v2b)</h3>
+<table>
+<thead>
+<tr>
+<th>Table</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>treatment_plans</code></td>
+<td><code>admission_id</code>, <code>doctor_id</code>, <code>status</code>, <code>version</code>, <code>supersedes_id</code></td>
+</tr>
+<tr>
+<td><code>medication_orders</code></td>
+<td><code>plan_id</code>, <code>drug_name</code>, optional <code>code</code> (RxNorm/ATC), <code>dose</code>, <code>unit</code>, <code>route</code>, <code>frequency_spec</code> (structured: interval or fixed times), <code>start_at</code>, <code>end_at</code>, <code>status</code> (<code>PENDING_VERIFICATION</code>→<code>ACTIVE</code>→<code>STOPPED</code>), <code>verified_by</code></td>
+</tr>
+<tr>
+<td><code>med_slots</code></td>
+<td>Materialized expected administrations: <code>order_id</code>, <code>due_at</code>, <code>window_end</code></td>
+</tr>
+<tr>
+<td><code>med_administrations</code></td>
+<td><code>slot_id</code>, <code>status</code> (<code>ADMINISTERED</code>/<code>MISSED</code>/<code>REFUSED</code>), <code>by_user</code>, <code>at</code>, <code>note</code>, <code>client_uuid</code> — append-only</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li><strong>Orders are versioned, not edited</strong>: changing a dose creates a new order superseding the old one; future slots of the old order are cancelled by a new row, not deleted.</li>
+<li><strong>Slot generation:</strong> on activation, generate slots for a <strong>72-hour rolling horizon</strong>; the daily job extends it. (72 h means a missed daily cron can't starve nurses.)</li>
+<li><strong>Overdue</strong> is derived (<code>now &gt; window_end AND no administration</code>). The sweep emits alerts; nurses record <code>MISSED</code> explicitly, or a system actor records it after a configurable grace period.</li>
+<li><strong>Conflicts:</strong> on slot generation, detect overlapping windows for the same patient and attach a <code>conflict_flag</code> for doctor review. <strong>Flag only — never block or auto-resolve</strong> (V2 §5.2).</li>
+<li><strong>Pharmacist verification</strong> is a facility setting; if on, slots aren't generated until <code>ACTIVE</code>.</li>
+<li>Treatment history remains queryable on any later admission via <code>patient_id</code> (V2 §4.2).</li>
+<li>No drug-interaction checking (out of scope).</li>
+</ul>
+<h3>11.2 Multi-facility &amp; Regional Admin (V2 §4.3, v2c)</h3>
+<ul>
+<li>Because v1 already has <code>facility_id</code> + RLS, v2c adds: <code>networks</code>, <code>user_facility_scopes</code> with &gt;1 rows, the <code>regional_admin</code> role, ward-level filters in UI, and <code>daily_facility_metrics</code>.</li>
+<li><strong>Capacity is per facility/ward and enforced by bed rows + the unique index</strong> — a Regional Admin has no write path to beds, so cannot override limits (V2 §5.7).</li>
+<li>Migration from v1 is additive: existing rows already carry the default <code>facility_id</code>. Expand/contract migrations only (§16).</li>
+</ul>
+<h3>11.3 Family status view (V2 §4.4, v2d)</h3>
+<table>
+<thead>
+<tr>
+<th>Table</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>family_contacts</code></td>
+<td><code>patient_id</code>, <code>contact_enc</code>, <code>channel</code>, <code>consent_at</code>, <code>consent_by</code> (patient/guardian + recorder), <code>consent_evidence_ref</code>, <code>revoked_at</code></td>
+</tr>
+<tr>
+<td><code>family_links</code></td>
+<td><code>token_hash</code> (SHA-256), <code>expires_at</code>, <code>revoked_at</code>, <code>last_viewed_at</code></td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li>Token: 256-bit random, shown once, <strong>only the hash is stored</strong>. URL <code>/s/{token}</code> contains no identifiers.</li>
+<li><strong>Consent gate:</strong> links cannot be created unless <code>consent_at</code> is set. Admin can revoke instantly; revocation is checked on every request.</li>
+<li>Expiry: default <code>admission + 60 days</code> or <code>discharge + 7 days</code>, whichever is earlier (configurable).</li>
+<li>Response contains <strong>only</strong>: admission date and one of <code>ADMITTED</code>, <code>UNDER_OBSERVATION</code>, <code>DISCHARGE_ELIGIBLE</code>, <code>DISCHARGED</code>. No temperatures, notes, treatment, diagnosis, or bed number.</li>
+<li>Headers: <code>Cache-Control: no-store</code>, <code>X-Robots-Tag: noindex</code>, <code>Referrer-Policy: no-referrer</code>; rate-limited per IP; identical response for invalid/expired/revoked tokens.</li>
+<li><strong>Deceased or transferred outcomes must never auto-update the family link or auto-send a notice.</strong> The page shows a neutral &quot;Please contact the facility&quot; message and notification is a human process (§17 G4).</li>
+<li>Automated discharge notification goes out via email (free) or SMS (paid adapter) on discharge execution.</li>
+</ul>
+<h3>11.4 Analytics &amp; reporting (V2 §4.5)</h3>
+<ul>
+<li><strong>Pre-aggregation:</strong> <code>daily_facility_metrics(facility_id, date, admissions, discharges, deaths, transfers, occupied_eod, sum_los_hours, …)</code>. Nightly job finalizes the previous day; &quot;today&quot; is computed incrementally on write. Dashboards read only rollups.</li>
+<li><strong>Readmission:</strong> at admission time, look up prior closed admissions by <code>patients.identity_hash</code> within <code>readmission_window_days</code>; set <code>admissions.readmission_of</code>. If no strong identifier exists, create a <code>possible_duplicate_of</code> suggestion for <strong>manual confirmation</strong> rather than auto-matching (avoids false positives — V2 §5.5).</li>
+<li><strong>Cohorts:</strong> group by ISO admission week; outcomes and LOS per cohort; annotate protocol-change dates.</li>
+<li><strong>Workload views:</strong> tasks completed per shift, framed as capacity. Individual-level views gated by an open product decision (V2 §8.4); default is management-only aggregates by shift.</li>
+<li><strong>Exports:</strong> CSV streamed from a route; PDF via <code>pdf-lib</code>. Exports are audited and RLS-scoped. Regulatory exports contain aggregates only unless explicitly authorized.</li>
+<li><strong>Same-day anomaly alerting</strong> (V2 §2): the mortality and readmission-rate checks run on write and in the tick.</li>
+</ul>
+<h3>11.5 Lab &amp; external integration (V2 §4.6)</h3>
+<ul>
+<li><code>POST /integrations/labs/fhir</code> accepts <strong>FHIR R4 Bundles</strong> (<code>Observation</code>, <code>DiagnosticReport</code>). Auth via per-source API key + optional HMAC signature.</li>
+<li><strong>Mapping:</strong> resolve patient via <code>Patient.identifier</code> → <code>patients.mrn</code>/<code>identity_hash</code>. Unmatched or ambiguous results go to <code>lab_results_inbox</code> (<code>PENDING_REVIEW</code>) for Admin/Doctor reconciliation — <strong>never discarded, never guessed</strong> (V2 §5.6).</li>
+<li>Idempotency on <code>(source_id, external_id)</code>; corrected results arrive as new versions; <code>lab_results</code> is append-only.</li>
+<li>Manual entry remains the fallback (same table, <code>source = 'manual'</code>).</li>
+<li><strong>Limitation:</strong> Vercel cannot receive raw TCP (HL7 v2 over MLLP). Labs that only speak HL7 v2 need a small bridge on their side, or an interface engine, that converts to HTTPS/FHIR. Confirm the lab's actual capabilities (V2 §8.3) before committing to this phase.</li>
+</ul>
+<hr>
+<h2>12. Non-functional requirements traceability</h2>
+<table>
+<thead>
+<tr>
+<th>PRD requirement</th>
+<th>Technical approach</th>
+<th>Free-tier caveat</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>99.9% uptime (V1 §2, §6)</td>
+<td>Offline-first clients; read-only degraded mode from cached task lists; uptime monitoring; status runbook</td>
+<td><strong>No SLA on Hobby (F3).</strong> Achievable target only after Pro/paid DB; free tier is best-effort</td>
+</tr>
+<tr>
+<td>Immutable audit (V1 §4.7, §6)</td>
+<td>Triggers + REVOKE + same-tx audit rows (§5.4)</td>
+<td>Audit in DB, not Vercel logs</td>
+</tr>
+<tr>
+<td>Encryption in transit/at rest</td>
+<td>TLS; provider at-rest encryption; field-level encryption for identifiers</td>
+<td><strong>No BAA on free tiers (F2)</strong></td>
+</tr>
+<tr>
+<td>Server-side RBAC (V1 §6)</td>
+<td><code>authorize()</code> on every handler + RLS</td>
+<td>—</td>
+</tr>
+<tr>
+<td>&lt;2 s task lists at 74 patients</td>
+<td>§8.3 indexes/queries, same region</td>
+<td>Cold DB resume adds a few hundred ms</td>
+</tr>
+<tr>
+<td>Configurable capacity</td>
+<td>Bed rows (§5.3)</td>
+<td>—</td>
+</tr>
+<tr>
+<td>Fast bedside entry</td>
+<td>PWA, large targets, ≤3 taps to log temperature, PIN switching</td>
+<td>—</td>
+</tr>
+<tr>
+<td>Monitoring &amp; alerting (V1 §6)</td>
+<td>Sentry, uptime pinger, error table, mortality alerts (§6.7)</td>
+<td>Log retention ~1 h on Hobby</td>
+</tr>
+<tr>
+<td>Notification degradation (V2 §6)</td>
+<td>Guaranteed in-app record + retries + escalation</td>
+<td>SMS paid</td>
+</tr>
+<tr>
+<td>Analytics performance (V2 §6)</td>
+<td>Rollups (§11.4)</td>
+<td>—</td>
+</tr>
+<tr>
+<td>Zero-downtime v1→v2 (V2 §6)</td>
+<td>Expand/contract migrations, feature flags</td>
+<td>Neon branches (free plan includes several) allow rehearsal</td>
+</tr>
+<tr>
+<td>Interoperability (V2 §6)</td>
+<td>FHIR R4 ingestion</td>
+<td>—</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h2>13. Reliability, observability and recovery</h2>
+<h3>13.1 Degraded modes</h3>
+<ol>
+<li><strong>App/DB unreachable:</strong> clients continue from cache and outbox (temps, visits, doses); a banner shows offline state.</li>
+<li><strong>DB quota exhausted / paused:</strong> read-only static &quot;downtime sheet&quot; page (pre-rendered list of current patients/beds/tasks, refreshed at each successful poll and stored client-side) so staff can continue on paper and back-enter later.</li>
+<li><strong>Full outage:</strong> printed <strong>downtime procedure</strong> (paper temp log template, back-entry procedure, who to call). Ship this as a deliverable, not an afterthought.</li>
+</ol>
+<h3>13.2 Monitoring</h3>
+<ul>
+<li>Sentry (errors, PII scrubbed), uptime pinger against a <strong>DB-free</strong> <code>/api/health</code> and a deeper <code>/api/health/deep</code> checked at low frequency (so monitoring doesn't burn Neon compute hours).</li>
+<li>Business monitors (in the tick job): &quot;no temperature logged for &gt;X% of patients by cutoff&quot;, &quot;outbox sync failures&quot;, &quot;notification failures&quot;, &quot;cron heartbeat stale&quot; → alert to System Admin. A missing heartbeat is itself an alert.</li>
+</ul>
+<h3>13.3 Data integrity checks (nightly)</h3>
+<p>Orphaned admissions, beds with &gt;1 open admission (should be impossible), readings with <code>clock_suspect</code>, eligibility flags inconsistent with recomputation.</p>
+<h3>13.4 Backup &amp; DR</h3>
+<ul>
+<li>Free-plan point-in-time restore windows are short; <strong>do not rely on them.</strong></li>
+<li>Nightly <code>pg_dump</code> (schema + data) → <strong>encrypted (age/GPG)</strong> → off-platform object storage (e.g., a free-tier bucket such as Cloudflare R2 — verify quota and terms). Keep 30 daily + 12 monthly copies.</li>
+<li>Monthly <strong>restore drill</strong> into a Neon branch, verified by row counts and invariant checks.</li>
+<li>Targets (Stage 0, best-effort): RPO ≤ 24 h, RTO ≤ 4 h. Stage 1 targets are tightened with paid PITR.</li>
+</ul>
+<hr>
+<h2>14. Free-tier capacity budget</h2>
+<p>Assumptions: 74 beds, ~40 staff accounts, ~25 concurrent users at peak.</p>
+<table>
+<thead>
+<tr>
+<th>Resource</th>
+<th>Estimate</th>
+<th>Free limit</th>
+<th>Verdict</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Rows written/day</td>
+<td>~74 temps (×1–2) + 74 visits + ~300 med admins (v2) + audit ≈ <strong>1,000–1,500</strong></td>
+<td>—</td>
+<td>—</td>
+</tr>
+<tr>
+<td>DB storage/year</td>
+<td>~0.4M rows × ~0.3 KB incl. indexes ≈ <strong>100–200 MB</strong></td>
+<td>0.5 GB (Neon Free)</td>
+<td>✅ ~1–2 years incl. v2; monitor</td>
+</tr>
+<tr>
+<td>Function invocations/month</td>
+<td>~40 users × ~300 req/day × 30 ≈ <strong>360k</strong> (+ ticks ~9k)</td>
+<td>~1M reported</td>
+<td>✅ but polling can inflate — see below</td>
+</tr>
+<tr>
+<td>Bandwidth</td>
+<td>JSON + cached shell, well under a few GB</td>
+<td>~100 GB reported</td>
+<td>✅</td>
+</tr>
+<tr>
+<td><strong>Neon compute</strong></td>
+<td>Compute stays awake 5 min after each query. Active 16 h/day ≈ 480 h × 0.25 CU = <strong>~120 CU-h/month</strong></td>
+<td><strong>100 CU-h/month</strong></td>
+<td>⚠️ <strong>Likely exceeded in real 24×7 operation</strong></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Polling can silently multiply invocations and keep the DB awake.</strong> Mitigations:</p>
+<ul>
+<li>Poll only while the tab is visible; back off to 2–5 min when hidden; use ETag/<code>304</code> responses served without touching the DB when nothing changed (a lightweight <code>events_cursor</code> in a cache or edge-cacheable response).</li>
+<li>Batch offline sync instead of per-record calls.</li>
+<li>Hit the DB-free health route from uptime monitors.</li>
+</ul>
+<p><strong>Even so, plan for compute to be the first free limit that binds.</strong> Always-on 0.25 CU on Neon's Launch plan is ≈ 0.25 × 730 h × $0.106 ≈ <strong>$19/month</strong> at published 2026 rates (<a href="https://neon.com/pricing">Neon pricing</a>) — small, and it also removes cold starts and free-plan hard stops. A Neon Free project that exhausts hours <strong>suspends compute until the next billing period</strong> (<a href="https://neon.com/faqs/free-plan-limits-and-quotas">Neon FAQ</a>) — an outage; therefore set a usage alert at 70% of quota.</p>
+<hr>
+<h2>15. Graduation triggers (free → paid)</h2>
+<p>Move to the Stage 1 stack <strong>before</strong> any of these happens:</p>
+<table>
+<thead>
+<tr>
+<th>Trigger</th>
+<th>Move</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Any real patient data enters the system</td>
+<td>Vercel Pro (commercial use permitted), BAA if a HIPAA-type regime applies, Neon paid plan with a suitable DPA/BAA option; legal sign-off</td>
+</tr>
+<tr>
+<td>Neon compute &gt;70% of monthly quota</td>
+<td>Neon Launch</td>
+</tr>
+<tr>
+<td>Need for SMS to family/staff</td>
+<td>Paid SMS provider (independent of Vercel plan)</td>
+</tr>
+<tr>
+<td>Need sub-daily scheduling without external tools</td>
+<td>Vercel Pro cron (per-minute)</td>
+</tr>
+<tr>
+<td>Need &gt;1 concurrent build / team collaboration</td>
+<td>Vercel Pro seats</td>
+</tr>
+<tr>
+<td>Contractual uptime commitment</td>
+<td>Paid plans + status page; consider alternative hosting</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Escape hatch:</strong> because the app uses standard Next.js + Postgres + HTTP-only scheduling, it can move to a container host or VPS by changing the scheduler adapter and env vars. Keep a documented, tested deploy path for this (&quot;Plan B&quot;).</p>
+<hr>
+<h2>16. Environments, CI/CD and migrations</h2>
+<table>
+<thead>
+<tr>
+<th>Environment</th>
+<th>Hosting</th>
+<th>Data</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Local</td>
+<td>Docker Postgres</td>
+<td>Synthetic seed</td>
+</tr>
+<tr>
+<td>Preview (per PR)</td>
+<td>Vercel preview + <strong>Neon branch per PR</strong></td>
+<td>Synthetic</td>
+</tr>
+<tr>
+<td>Staging</td>
+<td>Vercel (separate project) + own Neon project</td>
+<td>Synthetic</td>
+</tr>
+<tr>
+<td>Production</td>
+<td>Per §0 Stage 0 / Stage 1</td>
+<td>Real data <strong>only after Stage 1</strong></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Pipeline (GitHub Actions + Vercel Git integration):</strong> lint → typecheck → unit (Vitest + fast-check) → integration (Postgres) → RLS/authz matrix tests → Playwright e2e → migration dry-run on a Neon branch → Vercel deploy → smoke test.</p>
+<p><strong>Migrations (Drizzle):</strong> <em>expand → migrate → contract</em>. Never drop or rename in the same release that stops using a column. Migrations run from CI <strong>before</strong> the new app version is promoted, and are backward-compatible with the previous app version (needed for zero-downtime, V2 §6). All v2 migrations are additive to v1 (V2 §5.8).</p>
+<p><strong>Feature flags:</strong> <code>feature_flags(facility_id, key, enabled)</code> for phased v2 rollout (<code>notifications</code>, <code>medications</code>, <code>family_view</code>, <code>lab_ingest</code>, <code>sms</code>).</p>
+<p><strong>Secrets (Vercel encrypted env vars):</strong> <code>DATABASE_URL</code>, <code>AUTH_SECRET</code>, <code>FIELD_ENCRYPTION_KEY_V1</code>, <code>IDENTITY_HASH_PEPPER</code>, <code>VAPID_PUBLIC_KEY</code>/<code>VAPID_PRIVATE_KEY</code>, <code>CRON_SECRET</code>, <code>SENTRY_DSN</code>, provider keys. Never committed; rotated on staff turnover.</p>
+<hr>
+<h2>17. PRD ambiguities found and technical decisions taken</h2>
+<p>These need product/clinical confirmation but are resolved conservatively so engineering isn't blocked.</p>
+<table>
+<thead>
+<tr>
+<th>ID</th>
+<th>Gap in PRD</th>
+<th>Decision in this TRD</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>G1</strong></td>
+<td>V1 §4.2 says the &quot;latest value&quot; of the day is used for calculations; V1 §5.3 says <strong>any</strong> fever reading that day resets the streak. These conflict.</td>
+<td><strong>Any effective fever reading makes the day a fever day</strong> (safety-first). Wrong readings are removed by amendment.</td>
+</tr>
+<tr>
+<td><strong>G2</strong></td>
+<td>&quot;3 consecutive fever-free days&quot; doesn't say what happens when a day is unmeasured (V1 §8.2 also leaves calendar-vs-72h open).</td>
+<td>Calendar days; <strong>an unmeasured past day breaks the streak.</strong> <code>streak_mode</code> reserved for a future rolling-72h option.</td>
+</tr>
+<tr>
+<td><strong>G3</strong></td>
+<td>What if a fever is logged after doctor approval but before admin executes?</td>
+<td>Approval is voided automatically; execution returns <code>409</code>; doctor must re-approve (§6.3).</td>
+</tr>
+<tr>
+<td><strong>G4</strong></td>
+<td>v2 family statuses don't cover death/transfer.</td>
+<td>Never automated. Neutral message + human notification (§11.3).</td>
+</tr>
+<tr>
+<td><strong>G5</strong></td>
+<td>V1 §4.5 lets &quot;admin/clinical staff&quot; log outcomes, but §3 says admin can't enter clinical data.</td>
+<td><strong>DECEASED/TRANSFERRED = doctor only.</strong> Admin executes only cured discharge logistics.</td>
+</tr>
+<tr>
+<td><strong>G6</strong></td>
+<td>&quot;Assigned patients&quot; and &quot;per shift&quot; metrics need an assignment/shift model that isn't defined.</td>
+<td>Added <code>shifts</code> + <code>patient_assignments</code> (§5.3). Assignment UI is an Admin function.</td>
+</tr>
+<tr>
+<td><strong>G7</strong></td>
+<td>Waitlist ordering and bed-freed behavior are undefined.</td>
+<td>FIFO with optional priority; <code>bed.available</code> notifies Admin; admission remains a manual Admin action.</td>
+</tr>
+<tr>
+<td><strong>G8</strong></td>
+<td>v1 lists multi-facility as a non-goal, but v2 needs it.</td>
+<td>v1 schema carries <code>facility_id</code> and RLS from day one (small cost, avoids a risky migration).</td>
+</tr>
+<tr>
+<td><strong>G9</strong></td>
+<td>Mortality alert threshold equals the expected 15% rate; noisy at small n.</td>
+<td>Min-sample gate + hysteresis (§6.7).</td>
+</tr>
+<tr>
+<td><strong>G10</strong></td>
+<td>V1 §3 lets nurses edit &quot;own same-day&quot; entries, while §5.9 requires reason codes for all corrections.</td>
+<td>Both apply: nurse amendments are same-day/own-only <em>and</em> need a reason; later corrections are doctor-only.</td>
+</tr>
+<tr>
+<td><strong>G11</strong></td>
+<td>Quiet hours vs. critical alerts.</td>
+<td>Quiet hours suppress push/SMS for non-critical only; critical still lands in-app and to on-duty staff.</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h2>18. Delivery plan</h2>
+<p>Sizing is relative (S ≈ 1–2 wks, M ≈ 3–4 wks, L ≈ 5–8 wks for a 2–3 engineer team); confirm after a spike on offline sync and RLS.</p>
+<table>
+<thead>
+<tr>
+<th>Milestone</th>
+<th>Scope</th>
+<th>Size</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>M0 Foundations</strong></td>
+<td>Repo, CI, Neon branching, auth + MFA, RBAC/<code>authorize</code>, RLS scaffold, audit/access log, schema v1 with invariants and triggers, synthetic seed</td>
+<td>M</td>
+</tr>
+<tr>
+<td><strong>M1 Intake &amp; beds</strong></td>
+<td>Admissions, bed claim, waitlist, dashboards stub</td>
+<td>S</td>
+</tr>
+<tr>
+<td><strong>M2 Temperature &amp; streak</strong></td>
+<td>Nurse task list, logging, duplicate handling, amendments, <code>/domain/streak</code> with property tests</td>
+<td>M</td>
+</tr>
+<tr>
+<td><strong>M3 Doctor &amp; discharge</strong></td>
+<td>Visit flow with exceptions, eligibility events, approval/execution with re-validation, outcomes</td>
+<td>M</td>
+</tr>
+<tr>
+<td><strong>M4 Offline &amp; PWA</strong></td>
+<td>Outbox, sync endpoint, service worker, device PIN switching</td>
+<td>M–L</td>
+</tr>
+<tr>
+<td><strong>M5 Dashboards &amp; hardening</strong></td>
+<td>Facility Head views, mortality alerting, e2e, load test, security review, downtime runbook</td>
+<td>M</td>
+</tr>
+<tr>
+<td><strong>v1 release gate</strong></td>
+<td>UAT with synthetic data; legal/compliance decision on Stage 1 hosting (§0)</td>
+<td>—</td>
+</tr>
+<tr>
+<td><strong>v2a</strong></td>
+<td>Notification outbox + Web Push + scheduler ticks; analytics rollups/trends/exports</td>
+<td>M–L</td>
+</tr>
+<tr>
+<td><strong>v2b</strong></td>
+<td>Treatment plans, med slots/administration, pharmacist verification, missed-dose sweep</td>
+<td>L</td>
+</tr>
+<tr>
+<td><strong>v2c</strong></td>
+<td>Multi-facility scopes, Regional role/aggregates, isolation test suite</td>
+<td>M</td>
+</tr>
+<tr>
+<td><strong>v2d</strong></td>
+<td>Family view + consent + link lifecycle; FHIR lab ingestion + inbox</td>
+<td>L</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h2>19. Testing strategy</h2>
+<table>
+<thead>
+<tr>
+<th>Level</th>
+<th>Focus</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Unit / property</td>
+<td><code>/domain</code>: streak, eligibility, mortality, capacity rules, time-zone/DST/midnight edge cases (fast-check)</td>
+</tr>
+<tr>
+<td>Integration (real Postgres)</td>
+<td>Invariants: overbooking race (parallel admits), immutability triggers reject UPDATE/DELETE, idempotent replays, amendments → effective view</td>
+</tr>
+<tr>
+<td>Authorization</td>
+<td>Generated tests walking the §7.2 matrix; <strong>cross-facility RLS test for every tenant table</strong></td>
+</tr>
+<tr>
+<td>E2E (Playwright)</td>
+<td>Nurse→doctor→discharge happy path; <code>DUPLICATE_TODAY</code>; <code>TEMP_MISSING_TODAY</code> exception; fever-after-approval; offline log → reconnect → sync; shared-tablet PIN switch</td>
+</tr>
+<tr>
+<td>Offline chaos</td>
+<td>Network flapping, clock skew, duplicate flush, logout with pending outbox</td>
+</tr>
+<tr>
+<td>Notification</td>
+<td>Push failure → in-app fallback, dedupe, escalation, quiet hours</td>
+</tr>
+<tr>
+<td>Security</td>
+<td>Dependency scanning, secret scanning, CSP checks, family-token brute-force/enumeration tests, PHI-in-logs scan</td>
+</tr>
+<tr>
+<td>Load (k6, staging)</td>
+<td>25 concurrent users, 74-patient lists, p95 targets; keep runs short to respect free quotas</td>
+</tr>
+<tr>
+<td>Recovery</td>
+<td>Monthly backup restore drill; downtime-procedure walkthrough with staff</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h2>20. Risk register</h2>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>Risk</th>
+<th>Likelihood</th>
+<th>Impact</th>
+<th>Mitigation</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>R1</td>
+<td>Hobby plan terms/BAA don't permit a live clinical system</td>
+<td><strong>High</strong></td>
+<td><strong>Critical</strong></td>
+<td>§0 two-stage plan; legal review; no real PHI on free tiers</td>
+</tr>
+<tr>
+<td>R2</td>
+<td>Free-tier quota exhaustion pauses the app</td>
+<td>Med–High</td>
+<td>High</td>
+<td>Usage alerts at 70%; Neon Launch as first upgrade; downtime runbook</td>
+</tr>
+<tr>
+<td>R3</td>
+<td>Neon compute hours exhausted by continuous use</td>
+<td>High (24×7 ops)</td>
+<td>High</td>
+<td>§14 mitigations; budget ≈$19/month</td>
+</tr>
+<tr>
+<td>R4</td>
+<td>External scheduler outage delays overdue/escalation alerts</td>
+<td>Med</td>
+<td>Med</td>
+<td>Two schedulers; event-driven alerts don't depend on it; heartbeat monitor</td>
+</tr>
+<tr>
+<td>R5</td>
+<td>Offline sync bugs cause lost or duplicate clinical entries</td>
+<td>Med</td>
+<td>High</td>
+<td>Idempotency keys, visible pending state, chaos tests</td>
+</tr>
+<tr>
+<td>R6</td>
+<td>RLS misconfiguration leaks cross-facility data</td>
+<td>Low–Med</td>
+<td>Critical</td>
+<td>Non-owner role without BYPASSRLS, exhaustive isolation tests, periodic access-control audits</td>
+</tr>
+<tr>
+<td>R7</td>
+<td>Clinical rule ambiguity (G1–G3) leads to wrong discharge eligibility</td>
+<td>Med</td>
+<td>High</td>
+<td>Clinical sign-off on §6 before M2; doctor approval remains mandatory</td>
+</tr>
+<tr>
+<td>R8</td>
+<td>Alert fatigue reduces response to real alerts</td>
+<td>Med</td>
+<td>Med</td>
+<td>Dedupe, digesting, hysteresis, acknowledgment metrics</td>
+</tr>
+<tr>
+<td>R9</td>
+<td>Vercel/Neon change free-tier terms mid-project</td>
+<td>Med</td>
+<td>Med</td>
+<td>Portability rule; re-verify limits each milestone</td>
+</tr>
+<tr>
+<td>R10</td>
+<td>Lab systems lack a usable API</td>
+<td>Med</td>
+<td>Low–Med</td>
+<td>Manual entry remains; bridge or defer v2d integration</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h2>21. Open technical questions</h2>
+<ol>
+<li><strong>Jurisdiction and legal regime</strong> for patient data — determines whether Stage 0 can ever hold real data and which vendors are acceptable.</li>
+<li>Will the facility qualify for any Vercel non-commercial provision, or should Stage 1 hosting be decided now?</li>
+<li>Preferred <strong>SMS provider and sender-registration requirements</strong> in the deployment country (needed only when SMS is enabled).</li>
+<li>Available <strong>unique patient identifier</strong> (national ID, MRN)? Drives readmission matching quality and lab mapping.</li>
+<li>Device fleet: which tablets/OS versions? (Web Push, Background Sync, and PWA install behavior vary — especially on iOS.)</li>
+<li>Staff count, shift pattern, and expected peak concurrency — to validate the §14 budget.</li>
+<li>Confirmation of G1–G11 with the clinical lead.</li>
+<li>Retention period for audit logs and clinical records (V1 §8.4).</li>
+<li>Are staff workload analytics visible to staff themselves? (V2 §8.4 — affects API scoping.)</li>
+</ol>
+<hr>
+<h2>Appendix A — Sources checked (2026-09-22)</h2>
+<p>Limits and pricing change frequently and some sources disagree on details; re-verify before each phase.</p>
+<ul>
+<li>Vercel Hobby plan (non-commercial use): <a href="https://vercel.com/docs/plans/hobby">https://vercel.com/docs/plans/hobby</a></li>
+<li>Vercel limits: <a href="https://vercel.com/docs/limits">https://vercel.com/docs/limits</a></li>
+<li>Vercel HIPAA / BAA: <a href="https://vercel.com/kb/guide/is-vercel-hipaa-compliant">https://vercel.com/kb/guide/is-vercel-hipaa-compliant</a> and <a href="https://vercel.com/pricing">https://vercel.com/pricing</a></li>
+<li>Hobby cron constraints (third-party summary): <a href="https://crontap.com/blog/vercel-cron-hourly-limit-and-how-to-beat-it">https://crontap.com/blog/vercel-cron-hourly-limit-and-how-to-beat-it</a></li>
+<li>Neon Free plan limits: <a href="https://neon.com/faqs/free-plan-limits-and-quotas">https://neon.com/faqs/free-plan-limits-and-quotas</a></li>
+<li>Neon pricing: <a href="https://neon.com/pricing">https://neon.com/pricing</a></li>
+</ul>
+
+
+<!--claude-mermaid-runtime-begin:3477-->
+<style>.mermaid-diagram{margin-block:4px}.mermaid-diagram svg{display:block;margin:0 auto;max-width:100%;height:auto}</style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mermaid/11.4.0/mermaid.min.js"></script>
+<script>(function(){
+var CFG={"palettes":{"light":{"surface":"#f4efe4","text":"#42392e","line":"#8a7f6d","border":"#7a6c52","bg":"#fffdf8"},"dark":{"surface":"#262b34","text":"#f2f3f5","line":"#a8adb8","border":"#9aa4b8","bg":"#1f232b"}}};
+if(typeof mermaid==='undefined')return;
+var pres=Array.prototype.slice.call(document.querySelectorAll('pre.mermaid')).filter(function(p){if(p.hasAttribute('data-claude-mermaid-claimed'))return false;p.setAttribute('data-claude-mermaid-claimed','1');return true;});
+if(!pres.length)return;
+var mq=window.matchMedia?window.matchMedia('(prefers-color-scheme: dark)'):null;
+var root=document.documentElement;
+var items=pres.map(function(pre){
+var mount=document.createElement('div');mount.className='mermaid-diagram';
+return {pre:pre,mount:mount,src:pre.textContent||''};
+});
+var seq=0;
+var renderGen=0;
+var lastKey='';
+function pageBg(fallback){
+var els=[document.body,document.documentElement];
+for(var i=0;i<els.length;i++){
+var c=els[i]&&getComputedStyle(els[i]).backgroundColor;
+if(c&&c!=='transparent'&&c!=='rgba(0, 0, 0, 0)')return c;
+}
+return fallback;
+}
+function render(){
+var theme=root.getAttribute('data-theme');
+var dark=theme==='dark'||(!!(mq&&mq.matches)&&theme!=='light');
+var pal=dark?CFG.palettes.dark:CFG.palettes.light;
+var bg=pageBg(pal.bg);
+var key=(dark?'d':'l')+'|'+bg;
+if(key===lastKey)return;
+lastKey=key;
+var gen=++renderGen;
+var font=getComputedStyle(document.body).fontFamily||'sans-serif';
+var nat={useMaxWidth:false};
+mermaid.initialize({
+startOnLoad:false,securityLevel:'strict',theme:'base',
+flowchart:nat,sequence:nat,er:nat,state:nat,class:nat,pie:nat,
+gantt:nat,journey:nat,timeline:nat,gitGraph:nat,mindmap:nat,xyChart:nat,
+quadrantChart:nat,sankey:nat,c4:nat,requirement:nat,block:nat,
+packet:nat,kanban:nat,architecture:nat,radar:nat,
+themeVariables:{background:bg,mainBkg:pal.surface,primaryColor:pal.surface,
+primaryTextColor:pal.text,lineColor:pal.line,primaryBorderColor:pal.border,
+nodeBorder:pal.border,clusterBorder:pal.border,edgeLabelBackground:bg,
+clusterBkg:'rgba(127,127,127,0.07)',titleColor:pal.text,
+darkMode:dark,rowOdd:bg,rowEven:'rgba(127,127,127,0.07)',
+attributeBackgroundColorOdd:bg,attributeBackgroundColorEven:'rgba(127,127,127,0.07)',
+fontSize:'16px',fontFamily:font},
+themeCSS:'.node rect, .node circle, .node polygon, .node path, .cluster rect { stroke-width: 2px; }'
+});
+items.forEach(function(it){
+var id='claude-mermaid-'+seq++;
+mermaid.render(id,it.src).then(function(r){
+if(gen!==renderGen)return;
+var prev=it.pre.previousElementSibling;
+if(prev&&prev.className==='mermaid-diagram'&&prev!==it.mount)return;
+it.mount.innerHTML=r.svg;
+if(!it.mount.parentNode)it.pre.parentNode.insertBefore(it.mount,it.pre);
+it.pre.style.display='none';
+},function(){
+var scratch=document.getElementById(id);
+if(scratch)scratch.parentNode.removeChild(scratch);
+scratch=document.getElementById('d'+id);
+if(scratch)scratch.parentNode.removeChild(scratch);
+if(gen!==renderGen)return;
+if(it.mount.parentNode)it.mount.parentNode.removeChild(it.mount);
+it.pre.style.display='';
+});
+});
+}
+render();
+if(mq&&mq.addEventListener)mq.addEventListener('change',render);
+if(typeof MutationObserver!=='undefined')new MutationObserver(render).observe(root,{attributes:true,attributeFilter:['data-theme']});
+})();</script>
+<!--claude-mermaid-runtime-end-->
+</body></html>

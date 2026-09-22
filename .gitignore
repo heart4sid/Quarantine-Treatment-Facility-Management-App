@@ -1,0 +1,30 @@
+# dependencies
+node_modules
+/quarantine-app/node_modules
+/.pnp
+.pnp.*
+
+# next.js
+/quarantine-app/.next/
+/quarantine-app/out/
+
+# testing
+/quarantine-app/coverage/
+
+# environment files
+.env*
+!.env.example
+
+# vercel
+.vercel
+/quarantine-app/.vercel
+
+# logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# system
+.DS_Store
+Thumbs.db

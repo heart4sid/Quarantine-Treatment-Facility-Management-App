@@ -1,0 +1,17 @@
+{
+  "name": "Quarantine & Treatment Facility Management",
+  "short_name": "QuarantineApp",
+  "description": "Clinical management system for 74-bed quarantine and treatment facility",
+  "start_url": "/dashboard/nurse",
+  "display": "standalone",
+  "background_color": "#09090b",
+  "theme_color": "#09090b",
+  "orientation": "landscape-primary",
+  "icons": [
+    {
+      "src": "/favicon.ico",
+      "sizes": "64x64 32x32 24x24 16x16",
+      "type": "image/x-icon"
+    }
+  ]
+}
