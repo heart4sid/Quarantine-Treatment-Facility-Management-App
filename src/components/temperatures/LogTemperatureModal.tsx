@@ -76,7 +76,7 @@ export function LogTemperatureModal({
           setIsSubmitting(false);
           return;
         }
-        throw new Error(errData.title || "Failed to log temperature");
+        throw new Error(errData.message || errData.title || "Failed to log temperature");
       }
 
       setShowDuplicateModal(false);

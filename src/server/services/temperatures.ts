@@ -279,6 +279,104 @@ export async function evaluateDischargeEligibility(
   };
 }
 
+let mockNurseTasksStore: NurseTaskItem[] = [
+  {
+    admissionId: "adm-101",
+    patientId: "P-801",
+    patientNameEnc: "A. Mercer",
+    mrn: "MRN-1092",
+    bedId: "a-01",
+    bedLabel: "Bed A-01",
+    wardId: "ward-a",
+    wardName: "Ward A",
+    admittedAt: new Date(Date.now() - 4 * 86400000).toISOString(),
+    measuredToday: true,
+    latestReadingToday: {
+      id: "tr-01",
+      valueC: 36.7,
+      isFever: false,
+      recordedAt: new Date(Date.now() - 2 * 3600000).toISOString(),
+    },
+    currentStreak: 2,
+    isDischargeEligible: false,
+    dischargeEligibleSince: null,
+  },
+  {
+    admissionId: "adm-102",
+    patientId: "P-802",
+    patientNameEnc: "T. Henderson",
+    mrn: "MRN-1094",
+    bedId: "a-02",
+    bedLabel: "Bed A-02",
+    wardId: "ward-a",
+    wardName: "Ward A",
+    admittedAt: new Date(Date.now() - 6 * 86400000).toISOString(),
+    measuredToday: true,
+    latestReadingToday: {
+      id: "tr-02",
+      valueC: 36.4,
+      isFever: false,
+      recordedAt: new Date(Date.now() - 3 * 3600000).toISOString(),
+    },
+    currentStreak: 3,
+    isDischargeEligible: true,
+    dischargeEligibleSince: new Date(Date.now() - 86400000).toISOString(),
+  },
+  {
+    admissionId: "adm-103",
+    patientId: "P-803",
+    patientNameEnc: "S. Thorne",
+    mrn: "MRN-1098",
+    bedId: "a-03",
+    bedLabel: "Bed A-03",
+    wardId: "ward-a",
+    wardName: "Ward A",
+    admittedAt: new Date(Date.now() - 2 * 86400000).toISOString(),
+    measuredToday: true,
+    latestReadingToday: {
+      id: "tr-03",
+      valueC: 38.5,
+      isFever: true,
+      recordedAt: new Date(Date.now() - 1 * 3600000).toISOString(),
+    },
+    currentStreak: 0,
+    isDischargeEligible: false,
+    dischargeEligibleSince: null,
+  },
+  {
+    admissionId: "adm-104",
+    patientId: "P-805",
+    patientNameEnc: "K. Bradley",
+    mrn: "MRN-1102",
+    bedId: "a-05",
+    bedLabel: "Bed A-05",
+    wardId: "ward-a",
+    wardName: "Ward A",
+    admittedAt: new Date(Date.now() - 3 * 86400000).toISOString(),
+    measuredToday: false,
+    latestReadingToday: null,
+    currentStreak: 1,
+    isDischargeEligible: false,
+    dischargeEligibleSince: null,
+  },
+  {
+    admissionId: "adm-105",
+    patientId: "P-811",
+    patientNameEnc: "R. Vance",
+    mrn: "MRN-2041",
+    bedId: "b-01",
+    bedLabel: "Bed B-01",
+    wardId: "ward-b",
+    wardName: "Ward B",
+    admittedAt: new Date(Date.now() - 1 * 86400000).toISOString(),
+    measuredToday: false,
+    latestReadingToday: null,
+    currentStreak: 0,
+    isDischargeEligible: false,
+    dischargeEligibleSince: null,
+  },
+];
+
 // ─── Log Temperature ──────────────────────────────────────────────────────────
 
 /**
@@ -303,6 +401,45 @@ export async function logTemperature(
   const defaultFeverThreshold = 38.0;
   const defaultIsFever = input.valueC >= defaultFeverThreshold;
   const defaultLocalDate = toLocalDate(serverNow, "Asia/Kolkata");
+
+  // Handle mock admissions in-memory for zero-latency demo resilience
+  const mockItem = mockNurseTasksStore.find((t) => t.admissionId === admissionId);
+  if (mockItem) {
+    if (mockItem.measuredToday && !input.confirmedDuplicate) {
+      throw new AppError("DUPLICATE_TODAY", 409, "A temperature has already been recorded for this patient today", {
+        valueC: mockItem.latestReadingToday?.valueC,
+        recordedAt: mockItem.latestReadingToday?.recordedAt,
+      });
+    }
+    const readingId = randomUUID();
+    const newStreak = defaultIsFever ? 0 : mockItem.currentStreak + 1;
+    const isEligible = newStreak >= 3;
+    mockItem.measuredToday = true;
+    mockItem.latestReadingToday = {
+      id: readingId,
+      valueC: input.valueC,
+      isFever: defaultIsFever,
+      recordedAt: serverNow.toISOString(),
+    };
+    mockItem.currentStreak = newStreak;
+    mockItem.isDischargeEligible = isEligible;
+    mockItem.dischargeEligibleSince = isEligible ? serverNow.toISOString() : null;
+
+    return {
+      readingId,
+      admissionId,
+      valueC: input.valueC,
+      isFever: defaultIsFever,
+      thresholdCUsed: defaultFeverThreshold,
+      recordedAt: serverNow.toISOString(),
+      localDate: defaultLocalDate,
+      clockSuspect: false,
+      isDuplicateConfirmed: Boolean(input.confirmedDuplicate),
+      streak: newStreak,
+      isDischargeEligible: isEligible,
+      dischargeEligibleSince: mockItem.dischargeEligibleSince,
+    };
+  }
 
   try {
     // ── Load facility settings ──────────────────────────────────────────────────
@@ -523,6 +660,35 @@ export async function amendTemperature(
 ): Promise<AmendTemperatureResult> {
   const { facilityId, userId, roles, requestId } = ctx;
   const now = new Date();
+
+  // Support in-memory mock store for demo resilience
+  const mockTask = mockNurseTasksStore.find((t) => t.latestReadingToday?.id === readingId);
+  if (mockTask && mockTask.latestReadingToday) {
+    const amendmentId = randomUUID();
+    const defaultLocalDate = toLocalDate(now, "Asia/Kolkata");
+    if (input.valueC !== null && input.valueC !== undefined) {
+      const isFever = input.valueC >= 38.0;
+      mockTask.latestReadingToday.valueC = input.valueC;
+      mockTask.latestReadingToday.isFever = isFever;
+      mockTask.currentStreak = isFever ? 0 : 3;
+      mockTask.isDischargeEligible = !isFever && mockTask.currentStreak >= 3;
+      mockTask.dischargeEligibleSince = mockTask.isDischargeEligible ? now.toISOString() : null;
+    }
+    return {
+      amendmentId,
+      originalReadingId: readingId,
+      admissionId: mockTask.admissionId,
+      valueC: input.valueC ?? null,
+      isFever: input.valueC ? input.valueC >= 38.0 : null,
+      reasonCode: input.reasonCode,
+      reasonNote: input.reasonNote ?? null,
+      recordedAt: now.toISOString(),
+      localDate: defaultLocalDate,
+      streak: mockTask.currentStreak,
+      isDischargeEligible: mockTask.isDischargeEligible,
+      dischargeEligibleSince: mockTask.dischargeEligibleSince,
+    };
+  }
 
   try {
     // ── Find original reading ───────────────────────────────────────────────────
@@ -776,104 +942,7 @@ export async function getAdmissionStreak(
  * for targetDate. Computes streak and eligibility for each patient.
  */
 function getMockNurseTasks(targetDate: string): NurseTasksResult {
-  const tasks: NurseTaskItem[] = [
-    {
-      admissionId: "adm-101",
-      patientId: "P-801",
-      patientNameEnc: "A. Mercer",
-      mrn: "MRN-1092",
-      bedId: "a-01",
-      bedLabel: "Bed A-01",
-      wardId: "ward-a",
-      wardName: "Ward A",
-      admittedAt: new Date(Date.now() - 4 * 86400000).toISOString(),
-      measuredToday: true,
-      latestReadingToday: {
-        id: "tr-01",
-        valueC: 36.7,
-        isFever: false,
-        recordedAt: new Date(Date.now() - 2 * 3600000).toISOString(),
-      },
-      currentStreak: 2,
-      isDischargeEligible: false,
-      dischargeEligibleSince: null,
-    },
-    {
-      admissionId: "adm-102",
-      patientId: "P-802",
-      patientNameEnc: "T. Henderson",
-      mrn: "MRN-1094",
-      bedId: "a-02",
-      bedLabel: "Bed A-02",
-      wardId: "ward-a",
-      wardName: "Ward A",
-      admittedAt: new Date(Date.now() - 6 * 86400000).toISOString(),
-      measuredToday: true,
-      latestReadingToday: {
-        id: "tr-02",
-        valueC: 36.4,
-        isFever: false,
-        recordedAt: new Date(Date.now() - 3 * 3600000).toISOString(),
-      },
-      currentStreak: 3,
-      isDischargeEligible: true,
-      dischargeEligibleSince: new Date(Date.now() - 86400000).toISOString(),
-    },
-    {
-      admissionId: "adm-103",
-      patientId: "P-803",
-      patientNameEnc: "S. Thorne",
-      mrn: "MRN-1098",
-      bedId: "a-03",
-      bedLabel: "Bed A-03",
-      wardId: "ward-a",
-      wardName: "Ward A",
-      admittedAt: new Date(Date.now() - 2 * 86400000).toISOString(),
-      measuredToday: true,
-      latestReadingToday: {
-        id: "tr-03",
-        valueC: 38.5,
-        isFever: true,
-        recordedAt: new Date(Date.now() - 1 * 3600000).toISOString(),
-      },
-      currentStreak: 0,
-      isDischargeEligible: false,
-      dischargeEligibleSince: null,
-    },
-    {
-      admissionId: "adm-104",
-      patientId: "P-805",
-      patientNameEnc: "K. Bradley",
-      mrn: "MRN-1102",
-      bedId: "a-05",
-      bedLabel: "Bed A-05",
-      wardId: "ward-a",
-      wardName: "Ward A",
-      admittedAt: new Date(Date.now() - 3 * 86400000).toISOString(),
-      measuredToday: false,
-      latestReadingToday: null,
-      currentStreak: 1,
-      isDischargeEligible: false,
-      dischargeEligibleSince: null,
-    },
-    {
-      admissionId: "adm-105",
-      patientId: "P-811",
-      patientNameEnc: "R. Vance",
-      mrn: "MRN-2041",
-      bedId: "b-01",
-      bedLabel: "Bed B-01",
-      wardId: "ward-b",
-      wardName: "Ward B",
-      admittedAt: new Date(Date.now() - 1 * 86400000).toISOString(),
-      measuredToday: false,
-      latestReadingToday: null,
-      currentStreak: 0,
-      isDischargeEligible: false,
-      dischargeEligibleSince: null,
-    },
-  ];
-
+  const tasks = mockNurseTasksStore;
   const total = tasks.length;
   const measuredCount = tasks.filter((t) => t.measuredToday).length;
   const pendingCount = total - measuredCount;
@@ -886,7 +955,7 @@ function getMockNurseTasks(targetDate: string): NurseTasksResult {
       pendingCount,
       completionRate: total > 0 ? measuredCount / total : 0,
     },
-    tasks,
+    tasks: [...tasks],
   };
 }
 
